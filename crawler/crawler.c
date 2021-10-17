@@ -9,7 +9,6 @@ int main(void){
   // print "hello" used in step 1 of lab...
   //printf("hello\n");
 
-  // ----------
   // 1. Create a new webpage at depth 0, with the seed URL: https://thayer.github.io/engs50/
   webpage_t * page = webpage_new("https://thayer.github.io/engs50/", 0, NULL);
     
