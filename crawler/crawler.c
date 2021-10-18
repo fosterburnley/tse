@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <webpage.h>
+#include "../utils/webpage.h"
+//#include "../utils/queue.h"
+//#include "../utils/hash.h"
+//#include <queue.h>
 
 
 int main(void){
@@ -10,7 +13,7 @@ int main(void){
   //printf("hello\n");
 
   // 1. Create a new webpage at depth 0, with the seed URL: https://thayer.github.io/engs50/
-  webpage_t * page = webpage_new("https://thayer.github.io/engs50/", 0, NULL);
+  webpage_t *page = webpage_new("https://thayer.github.io/engs50/", 0, NULL);
     
   // 2. Fetch the webpage html to your local computer
   // 3. Check that the fetch succeeded and if not exit with EXIT_FAILURE
