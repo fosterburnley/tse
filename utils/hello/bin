@@ -1,0 +1,17 @@
+/* hello.c --- 
+ * 
+ * 
+ * Author: Zachary J. Wong
+ * Created: Sun Sep 19 19:08:26 2021
+ * Version: 1.0 
+ * 
+ * Description: prints c 
+ * 
+ */
+
+#include <stdio.h>
+
+int main(void) {
+ 	printf("hello\n");
+	return 0;
+}
