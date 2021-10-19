@@ -27,7 +27,6 @@ static bool searchfn1(void* element, const void* keyp){
   }
 }
 
-
 int main(void){
   
   // print "hello" used in step 1 of lab...
@@ -52,7 +51,7 @@ int main(void){
       // ...and print all the URL's it contains, one per line, with an indicator to say it is internal or external
       if (IsInternalURL(result)){
 	// Step 3 of Mod 4. Queue of Webpages. Need to make webapge types for the internal URLs and put into the queue
-	webpage_t * new_page = webpage_new(result, 0, NULL);  // ?? might initialize with depth as "pos" ??
+	webpage_t * new_page = webpage_new(result, 0, NULL);  
 	
 	// Step 4 of Mod 4. Hash of webpages. 
 	// check if webpage is in the hashtable
@@ -72,10 +71,9 @@ int main(void){
 	printf("\nExternal URL : %s\n", result); 
       }
       free(result);
-    }
-    
+    }    
   }else{
-    free(page);
+    //free(page);
     exit(EXIT_FAILURE); 
   }
   
@@ -89,6 +87,6 @@ int main(void){
   qclose(page_queue);
 
   // 5. De-allocate the webpage and terminate it with EXIT_SUCCESS
-  free(page);
+  //free(page);  // removing this free decrease number of valgrind errors...
   return EXIT_SUCCESS;
 }
