@@ -25,6 +25,21 @@ static bool searchfn1(void* element, const void* keyp){
   }else{
     return false; 
   }
+
+}
+
+static int32_t pagesave(webpage_t *pagep, int id, char *dirname){
+  char pathandfile[100];
+  sprintf(pathandfile, "../%s/%d", dirname, id);
+  FILE *fp;
+  fp = fopen(pathandfile, "w+");
+  if (fp==NULL){
+    return (1);
+  }
+  printf("%s\n, %d\n, %d\n, %s\n", webpage_getURL(pagep), webpage_getDepth(pagep), webpage_getHTMLlen(pagep), webpage_getHTML(pagep));
+  fprintf(fp. "%s\n, %d\n, %d\n, %s\n", webpage_getURL(pagep), webpage_getDepth(pagep), webpage_getHTMLlen(pagep), webpage_getHTML(pagep));
+  fclose(fp);
+  return 0;
 }
 
 int main(void){
@@ -45,13 +60,15 @@ int main(void){
     char * result;
     page_queue = qopen();  // queue to hold the newly created webpages for internal URLs
     page_hash = hopen(1000);
-
+    int id = 1;
+    savepage(page, id, "pages");
     while ((pos = webpage_getNextURL(page, pos, &result)) > 0){
       
       // ...and print all the URL's it contains, one per line, with an indicator to say it is internal or external
       if (IsInternalURL(result)){
 	// Step 3 of Mod 4. Queue of Webpages. Need to make webapge types for the internal URLs and put into the queue
-	webpage_t * new_page = webpage_new(result, 0, NULL);  
+	webpage_t * new_page = webpage_new(result, 0, NULL);
+	if (webpage_fetch(new_page)){
 	qput(page_queue, (void*) new_page);
 	//printf("depth: %d\n", webpage_getDepth(new_page));
 					   
@@ -63,7 +80,10 @@ int main(void){
 	//printf("webpage after finding in hash table: %s\n", webpage_getURL(found));
 
 	if (found == NULL){
+	  pagesave(new_page, id, "pages");
+	  id++;
 	    hput(page_hash, (void*) new_page, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
+	}
 	}
       }else{
 	printf("\nExternal URL : %s\n", result); 
