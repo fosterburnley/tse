@@ -45,35 +45,33 @@ int main(void){
     char * result;
     page_queue = qopen();  // queue to hold the newly created webpages for internal URLs
     page_hash = hopen(1000);
-		
+
     while ((pos = webpage_getNextURL(page, pos, &result)) > 0){
       
       // ...and print all the URL's it contains, one per line, with an indicator to say it is internal or external
       if (IsInternalURL(result)){
 	// Step 3 of Mod 4. Queue of Webpages. Need to make webapge types for the internal URLs and put into the queue
 	webpage_t * new_page = webpage_new(result, 0, NULL);  
+	qput(page_queue, (void*) new_page);
+	//printf("depth: %d\n", webpage_getDepth(new_page));
+					   
+	// Step 4 of Mod 4. Hash of webpages
+	void * found = hsearch(page_hash, searchfn1, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
 	
-	// Step 4 of Mod 4. Hash of webpages. 
-	// check if webpage is in the hashtable
-	// if not, then put it in hashtable and put it in queue
-	// if yes, then do not put in hashtable or queue and move on
-	webpage_t *found = (webpage_t*) hsearch(page_hash, searchfn1, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
-
 	//printf("current webpage in question: %s\n", webpage_getURL(new_page));
 	//printf("URL length: %d\n", (int) strlen(webpage_getURL(new_page)));
-	printf("webpage after finding in hash table: %s\n", webpage_getURL(found));
+	//printf("webpage after finding in hash table: %s\n", webpage_getURL(found));
 
 	if (found == NULL){
 	    hput(page_hash, (void*) new_page, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
-	    qput(page_queue, (void*) new_page);
 	}
       }else{
 	printf("\nExternal URL : %s\n", result); 
       }
       free(result);
-    }    
+    }
   }else{
-    //free(page);
+    webpage_delete(page);
     exit(EXIT_FAILURE); 
   }
   
@@ -83,10 +81,11 @@ int main(void){
   printf("\ninternal queue of webpages...\n");
   qapply(page_queue, print_page);
   // ... then close them.
+  qapply(page_queue, webpage_delete);
   hclose(page_hash);
   qclose(page_queue);
-
+ 
   // 5. De-allocate the webpage and terminate it with EXIT_SUCCESS
-  //free(page);  // removing this free decrease number of valgrind errors...
+  webpage_delete(page); 
   return EXIT_SUCCESS;
 }
