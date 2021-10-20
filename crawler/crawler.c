@@ -56,8 +56,11 @@ static int32_t pagesave(webpage_t *pagep, int id, char *dirname){
   return 0;
 }
 
-int main(void){
-  
+/*
+ * seedurl, pagedir, maxdepth 
+ */
+int main(){
+
   // print "hello" used in step 1 of lab...
   //printf("hello\n");
 	char *dirname = "pages";
@@ -77,7 +80,6 @@ int main(void){
 		if (status){
 			printf("removing %s\n", pathandfile);
 			remove(pathandfile);
-
 			//update id and path to file
 			id++;     
 			sprintf(pathandfile, "../%s/%d", dirname, id);
@@ -92,10 +94,6 @@ int main(void){
     char * result;
     page_queue = qopen();  // queue to hold the newly created webpages for internal URLs
     page_hash = hopen(1000);
-		
-	  // remove each file if it exists
-			
-
 
 		// reset id 
     id = 1;
@@ -107,7 +105,7 @@ int main(void){
         	// Step 3 of Mod 4. Queue of Webpages. Need to make webapge types for the internal URLs and put into the queue
 				webpage_t * new_page = webpage_new(result, 0, NULL);
 				if (webpage_fetch(new_page)){
-					qput(page_queue, (void*) new_page);
+
          	//printf("depth: %d\n", webpage_getDepth(new_page));
 					   
 	          // Step 4 of Mod 4. Hash of webpages
@@ -118,19 +116,26 @@ int main(void){
 	          //printf("webpage after finding in hash table: %s\n", webpage_getURL(found));
 
 					if (found == NULL){
+					 	qput(page_queue, (void*) new_page);				
 						hput(page_hash, (void*) new_page, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
 						pagesave(new_page, id, dirname);
 						id++;
 					}
+					else{
+						printf("free duplicate webpage: %s", webpage_getURL(new_page));
+						webpage_delete(new_page);
+					}
 				}
       }
-			else{
+			else
+				{
 				printf("\nExternal URL : %s\n", result); 
       }
       free(result);
     }
   }
-	else{
+	else
+	 {
     webpage_delete(page);
     exit(EXIT_FAILURE); 
   }
