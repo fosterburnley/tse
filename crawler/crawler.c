@@ -39,9 +39,8 @@ static bool checkFileExists(char *filename){
 	else{
 		return false; 
 	}
-
-
 }
+
 static int32_t pagesave(webpage_t *pagep, int id, char *dirname){
   char pathandfile[100];
   sprintf(pathandfile, "../%s/%d", dirname, id);
@@ -59,32 +58,40 @@ static int32_t pagesave(webpage_t *pagep, int id, char *dirname){
 /*
  * seedurl, pagedir, maxdepth 
  */
-int main(){
+int main(int argc, char ** argv){
 
   // print "hello" used in step 1 of lab...
   //printf("hello\n");
-	char *dirname = "pages";
+
+  if (argc != 4){
+    printf("usage: crawler <seedurl> <pagedir> <maxdepth>\n");
+    exit(EXIT_FAILURE);
+  }
+  
+  char *dirname = argv[2];
   queue_t *page_queue;
   hashtable_t *page_hash;
+  char * url = argv[1];
+  int maxdepth = atoi(argv[3]);
   // 1. Create a new webpage at depth 0, with the seed URL: https://thayer.github.io/engs50/
-  webpage_t *page = webpage_new("https://thayer.github.io/engs50/", 0, NULL);
+  webpage_t *page = webpage_new(url, 0, NULL);
 
 	// delete all files in pages directory if they exist
-	int id = 1;
+  int id = 1;
   char pathandfile[100];
-	sprintf(pathandfile, "../%s/%d", dirname, id);
+  sprintf(pathandfile, "../%s/%d", dirname, id);
 	
-	bool status = checkFileExists(pathandfile);
-	while(status){
-		status = checkFileExists(pathandfile);
-		if (status){
-			printf("removing %s\n", pathandfile);
-			remove(pathandfile);
-			//update id and path to file
-			id++;     
-			sprintf(pathandfile, "../%s/%d", dirname, id);
-		}
-	}
+  bool status = checkFileExists(pathandfile);
+  while(status){
+    status = checkFileExists(pathandfile);
+    if (status){
+      printf("removing %s\n", pathandfile);
+      remove(pathandfile);
+      //update id and path to file
+      id++;     
+      sprintf(pathandfile, "../%s/%d", dirname, id);
+    }
+  }
 
   // 2. Fetch the webpage html to your local computer
   // 3. Check that the fetch succeeded and if not exit with EXIT_FAILURE
@@ -95,51 +102,55 @@ int main(){
     page_queue = qopen();  // queue to hold the newly created webpages for internal URLs
     page_hash = hopen(1000);
 
-		// reset id 
-    id = 1;
+    id = 1; 
+    
+    if (maxdepth == 0){
+      pagesave(page, id, dirname);
+      free(page);
+      exit(EXIT_SUCCESS);
+    }
+    
+    int cur_depth = 1;
+    while (cur_depth <= maxdepth){
 		//    pagesave(page, id, "pages");
-    while ((pos = webpage_getNextURL(page, pos, &result)) > 0){
+      while ((pos = webpage_getNextURL(page, pos, &result)) > 0){
       // ...and print all the URL's it contains, one per line, with an indicator to say it is internal or external
-      if (IsInternalURL(result)){
+	if (IsInternalURL(result)){
 				
-        	// Step 3 of Mod 4. Queue of Webpages. Need to make webapge types for the internal URLs and put into the queue
-				webpage_t * new_page = webpage_new(result, 0, NULL);
-				if (webpage_fetch(new_page)){
+     	  webpage_t * new_page = webpage_new(result, cur_depth, NULL);
+	  if (webpage_fetch(new_page)){
 
          	//printf("depth: %d\n", webpage_getDepth(new_page));
 					   
-	          // Step 4 of Mod 4. Hash of webpages
-					void * found = hsearch(page_hash, searchfn1, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
+     	    void * found = hsearch(page_hash, searchfn1, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
 	
-	         //printf("current webpage in question: %s\n", webpage_getURL(new_page));
-	         //printf("URL length: %d\n", (int) strlen(webpage_getURL(new_page)));
-	          //printf("webpage after finding in hash table: %s\n", webpage_getURL(found));
-
-					if (found == NULL){
-					 	qput(page_queue, (void*) new_page);				
-						hput(page_hash, (void*) new_page, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
-						pagesave(new_page, id, dirname);
-						id++;
-					}
-					else{
-						printf("free duplicate webpage: %s", webpage_getURL(new_page));
-						webpage_delete(new_page);
-					}
-				}
+	    if (found == NULL){
+	      qput(page_queue, (void*) new_page);				
+	      hput(page_hash, (void*) new_page, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
+	      pagesave(new_page, id, dirname);
+	      id++;
+	      
+	    } else {
+	      printf("free duplicate webpage: %s", webpage_getURL(new_page));
+	      webpage_delete(new_page);
+	    }
+	  }
+	  
+	} else {
+	  printf("\nExternal URL : %s\n", result); 
+	}
+	//free(result);
       }
-			else
-				{
-				printf("\nExternal URL : %s\n", result); 
-      }
-      free(result);
+      cur_depth += 1;
     }
-  }
-	else
-	 {
-    webpage_delete(page);
-    exit(EXIT_FAILURE); 
-  }
-  
+    free(result);
+
+  } else {
+      webpage_delete(page);
+      exit(EXIT_FAILURE); 
+    }
+   
+       
   // need to print the hash table and queue...
   printf("\ninternal hash of webpages...\n");
   happly(page_hash, print_page);
