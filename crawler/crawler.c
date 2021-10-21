@@ -136,7 +136,7 @@ int main(int argc, char ** argv){
 				if (IsInternalURL(result)){
 					
 					webpage_t * new_page = webpage_new(result, currdepth, NULL);
-					void *found1 = hsearch(page_hash, searchfn1, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
+					//void *found1 = hsearch(page_hash, searchfn1, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
 					
 					//if (found1 == NULL && currdepth >= 1){
 					//	printf("webpage already crawled: %s", webpage_getURL(new_page));
@@ -147,7 +147,7 @@ int main(int argc, char ** argv){
          	//printf("depth: %d\n", webpage_getDepth(new_page));
 					   
 							void * found = hsearch(page_hash, searchfn1, webpage_getURL(new_page), (int) strlen(webpage_getURL(new_page)));
-							webpage_t* foundPage = (webpage_t*) found;
+							//webpage_t* foundPage = (webpage_t*) found;
 							//printf("current hash\n");
 							//happly(page_hash, print_page);     
 							//printf("found page: %s\n", webpage_getURL(foundPage));
@@ -166,17 +166,16 @@ int main(int argc, char ** argv){
 						//}
 				}
 				else {
-					printf("\nExternal URL : %s\n", result); 
+					printf("\nExternal URL : %s\n", result);
 				}
-	//free(result);
-    
+				free(result);
 			}
-    free(result);
 		}
 
 	else {
+		//		printf("deleting page %s", webpage_getURL(page));
 		webpage_delete(page);
-		//exit(EXIT_FAILURE); 
+		//return (EXIT_FAILURE); 
 	}
 		//update depth 
 		//currdepth= currdepth + 1;
