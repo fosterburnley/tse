@@ -93,8 +93,8 @@ int main(int argc, char ** argv){
     }
   }
 	webpage_t *page = webpage_new(url, 0, NULL);		
-	page_queue = qopen();
-	page_hash = hopen(1000);
+	//	page_queue = qopen();
+	//page_hash = hopen(1000);
 	//qput(page_queue, (void*) page);
 	//hput(page_hash, (void*) page, webpage_getURL(page), (int) strlen(webpage_getURL(page)));
 	int currdepth = 0;
@@ -116,7 +116,9 @@ int main(int argc, char ** argv){
     
 			if (maxdepth == 0){
 				pagesave(page, id, dirname);
-				free(page);
+				webpage_delete(page);
+				qclose(page_queue);
+				hclose(page_hash);
 				exit(EXIT_SUCCESS);
 			}
 			else if (currdepth == 0){
@@ -185,15 +187,17 @@ int main(int argc, char ** argv){
 		//		printf("current seed page depth: %d", webpage_getDepth(page));
 		//currdepth = webpage_getDepth(page) + 1;
 		//		printf("current depth: %d\n", currdepth);
+		//		webpage_t* temp = page;
 		webpage_t* removedPage = qremove(page_queue, searchfn1, webpage_getURL(page));
 		printf("remove page URL: %s\n", webpage_getURL(removedPage));  
-
+	  
 		// get the updated first page in queue
 		page = (webpage_t*) qget(page_queue);
+		//webpage_delete(temp);
 		//printf(" seed page depth after updated: %d\n", webpage_getDepth(page));
 	  int olddepth = webpage_getDepth(page);
 		currdepth = olddepth + 1;
-		//printf("updated page URL: %s\n", webpage_getURL(page));
+		printf("updated page URL: %s\n", webpage_getURL(page));
 		//printf("\ninternal queue of webpages after get and adding 1 to current depth\n");
 		//qapply(page_queue, print_page);
 	}
