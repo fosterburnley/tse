@@ -82,11 +82,8 @@ void webpage_delete(void *data)
 {
   webpage_t *page = data;
   if (page != NULL) {
-		printf("freeing url..");
     if (page->url) free(page->url);
-		printf("freeing html..");   
     if (page->html) free(page->html);
-		printf("freeing page..");   
     free(page);
   }
 }
