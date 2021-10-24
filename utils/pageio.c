@@ -84,7 +84,7 @@ webpage_t *pageload(int id, char *dirnm){
 
 		//stringurl = "test";
 
-	printf("html: %s\n", html);
+	//printf("html: %s\n", html);
 
 	webpage=webpage_new(url, depth, html);
 		free(url);
