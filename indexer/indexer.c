@@ -19,14 +19,21 @@
 #define MAXWORD 100
 #define MAXHASH 1000
 
+//global count variable 
 int totalcount = 0;
 
+/*
+ *the word count struct with a word and associated count 
+*/
 typedef struct countstruct{
 	char* word;
 	int count;
 
 } count_i;
 
+/*
+ *search for wordcount struct using word as key
+*/ 
 static bool wsearchfn(void* element, const void *key){
 	count_i* count_w;
 	count_w = (count_i*) element;
@@ -47,6 +54,9 @@ static bool wsearchfn(void* element, const void *key){
 
 }
 
+/*
+ * print the word from wordcount struct 
+*/ 
 void print_countword(void *count_v){
 	
 	count_i* count_w;
@@ -58,12 +68,19 @@ void print_countword(void *count_v){
 	printf("word in hash: %s\n", count_w->word);
 	printf("count: %d\n", count_w->count);
 }
+
+/*
+ * sum the counts in hash table
+*/ 
 void sum_count(void *counttype){
 	count_i* count_w;
 	count_w = (count_i*) counttype;
 	totalcount = totalcount+ count_w->count;
 }
 
+/*
+* free all the blocks in a word count struct
+*/ 
 void delete_countstruct(void *count_v){
 	count_i* count_w = (count_i*) count_v;
 	free(count_w->word);
@@ -71,7 +88,9 @@ void delete_countstruct(void *count_v){
 	free(count_w);
 }
 
-
+/*
+ *lowercase word that is greater than 3 letters
+*/ 
 void NormalizeWord(char* word){
 	//check for length
 	if (!isalpha(word[0])){
@@ -86,7 +105,7 @@ void NormalizeWord(char* word){
 		
 }
 
-
+ 
 int main(){
 	webpage_t* webpage;
 	char* word=NULL;
@@ -98,7 +117,7 @@ int main(){
 	webpage = pageload(1, "pages-depth3");
 	hword = hopen(MAXHASH);
 
-	
+ 	
  	while((pos = webpage_getNextWord(webpage, pos, &word))!=-1){
 		count_i* count_w;
 		count_w = (count_i*) (malloc(sizeof(count_i)));
@@ -117,8 +136,8 @@ int main(){
 		count_i* found = (count_i*)(hsearch(hword, wsearchfn, word, strlen(word)));
 		//		count_w = found;
 		
-		//if found, add 1 to count
-		// if not found, put struct in hash and add 1 to count
+		//if wordcount struct is found, add 1 to its count
+		// if not found, put wordcount element in hash and initialize 1 to its count
 		if(found!=NULL){	
 			//count_w -> word = found -> word;
 			//printf("found word: %s, count: %d\n", found -> word, found->count);
@@ -132,20 +151,16 @@ int main(){
 		else{
 			hput(hword, (void*) count_w, word, strlen(word));
 		}
-
-
-		//	happly(hword, print_countword);
 	}
 	printf("printing hash..");
 	happly(hword, print_countword);
 
 
 	//sum counts
-
-
-
 	happly(hword, sum_count);
-printf("totalcount: %d", totalcount);
+printf("totalcount: %d\n", totalcount);
+
+// free remaining bloscks
 	happly(hword, delete_countstruct);
 	hclose(hword);
 	webpage_delete(webpage);
