@@ -29,32 +29,101 @@ int32_t pagesave(webpage_t *pagep, int id, char *dirname){
 
 	// webpage_getHTMLlen adjusted to account for extra new line added in load page
 
-	int htmllenAdj = (webpage_getHTMLlen(pagep))-1;
+		int htmllenAdj = (webpage_getHTMLlen(pagep))-1;
   printf("pagesaved at %s: %s with current depth: %d\n", pathandfile, webpage_getURL(pagep), webpage_getDepth(pagep)); 
   fprintf(fp, "%s\n%d\n%d%s\n", webpage_getURL(pagep), webpage_getDepth(pagep), htmllenAdj, webpage_getHTML(pagep));                                                                                                    
   fclose(fp);                                                                                                          
   return 0;                                                                                                            
 }    
 
-/*
-bool isEmpty(char *string){
 
-	for (int i = 0; i < sizeof(string); i++){
-		if (string[i] != '0'){
-		  return false;
-	}
-	return true;
+webpage_t *pageload(int id, char *dirnm){
+
+	char stringhtml[MAXARRAY]="";
+	char temphtml[MAXARRAY]="";
 	
+	char *url;
+	url = (char*) malloc(MAXARRAY*(sizeof(char)));
+	char *html;
+	html = (char*) malloc(MAXARRAY*(sizeof(char)));
+	
+	int depth;
+	int htmllen;
+	webpage_t* webpage;
+	bool isempty;
+	char pathandfile[MAXARRAY];
+	sprintf(pathandfile, "../pages/%s/%d", dirnm, id); 
+	FILE *fp = fopen(pathandfile, "r");
+	
+
+	fscanf(fp, "%s %d %d", url, &depth, &htmllen); 
+	printf("url: %s\n", url);
+	while(fscanf(fp, "%[^\n]", temphtml)!=EOF){
+		fgetc(fp);
+		for (int i = 0; i < sizeof(temphtml); i++){
+			if (temphtml[i] !='0'){                                                                                                                
+        isempty = false;                                                                                                                     
+        break;                                                                                                                               
+      }                                                                                                                                      
+      isempty=true;                                                                                                                          
+    }
+		
+		if (isempty){
+			strcat(stringhtml, "\n");
+			strcpy(html, stringhtml);
+		}
+		else{
+
+			strcat(temphtml, "\n");
+			strcat(stringhtml, temphtml);
+			strcpy(html, stringhtml);
+			memset(temphtml, '0', sizeof(temphtml));
+		}
+		
+	}
+
+		//stringurl = "test";
+
+	//printf("html: %s\n", html);
+
+	webpage=webpage_new(url, depth, html);
+		free(url);
+	//	free(html);
+	//	webpage = webpage_new(url, depth, html);
+	fclose(fp);
+	
+	return webpage;
 
 }
-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
 webpage_t *pageload(int id, char *dirnm){
 	
-	char url[MAXARRAY];
-	char html[MAXARRAY];
+	char *url=NULL;
+	url = (char*)calloc(MAXARRAY, MAXARRAY * sizeof(char));
+	char *html=NULL;
+	html = (char*)calloc(MAXARRAY, MAXARRAY * sizeof(char));  
 	char temphtml[MAXARRAY];
-	int htmllen;
-	int depth;
+	int htmllen = 0;
+	int depth=0;
 	webpage_t* webpage; 
 	bool isempty=false; 
 	
@@ -66,7 +135,7 @@ webpage_t *pageload(int id, char *dirnm){
 	FILE *fp = fopen(pathandfile, "r");
 	// scan document
 	if (fp == NULL){
-		printf("warning: no such file");
+		//printf("warning: no such file");
 		return NULL;
 	}
 
@@ -75,11 +144,13 @@ webpage_t *pageload(int id, char *dirnm){
 	fscanf(fp, "%s %d %d", url, &depth, &htmllen);
 	while (fscanf(fp, "%[^\n]", temphtml)!=EOF){
 		fgetc(fp);
-		printf("temphtml: %s\n", temphtml);
+		strcpy(url, temphtml);
+		//printf("temphtml: %s\n", temphtml);
 
 		//appends new line to html array
 		//strcat(html, temphtml);
 		//reset temphtml and replaces new lines with spaces
+		
 		for (int i = 0; i < sizeof(temphtml); i++){
 			if (temphtml[i] !='0'){
 				isempty = false;
@@ -89,16 +160,17 @@ webpage_t *pageload(int id, char *dirnm){
 		}
 		
 	  if (isempty){
-			printf("empty temphtml");
+			//printf("empty temphtml");
 			strcat(html, "\n");
 		}
 		else{
-			printf("not empty temphtml");
+			//			printf("not empty temphtml");
 			strcat(html, temphtml);
 			strcat(html, "\n");
 		}
 		memset(temphtml, '0', sizeof(temphtml));
-	}
+		
+//}
 
 					 
 				 
@@ -111,14 +183,14 @@ webpage_t *pageload(int id, char *dirnm){
 
 	//get html
 	//	webpage_t* webpage = webpage_new(	
-	fclose(fp);
+//	fclose(fp);
 
-	//depth - 1 to compensate for extra line added at the end of the html load process
-	webpage = webpage_new(url, depth, html);
-	return webpage;
+	
+//webpage = webpage_new(url, depth, html);
+//	return webpage;
 
-}				 
-
+//}				 
+*/
 
 
 	

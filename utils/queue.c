@@ -125,7 +125,7 @@ void qapply(queue_t *qp, void (*fn)(void* elementp)){
 	while (currentElement!=NULL){
 		currentElementV = currentElement->data;
 		if (currentElementV == NULL){
-       			printf("warning: entered for loop but element is NULL! \n\n");
+			//       			printf("warning: entered for loop but element is NULL! \n\n");
 		}
 		fn(currentElementV);
 		currentElement=currentElement->next;
