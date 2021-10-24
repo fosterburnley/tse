@@ -60,6 +60,7 @@ void print_countword(void *count_v){
 void delete_countstruct(void *count_v){
 	count_i* count_w = (count_i*) count_v;
 	free(count_w->word);
+	
 	free(count_w);
 }
 
@@ -116,6 +117,7 @@ int main(){
 			//printf("found word: %s, count: %d\n", found -> word, found->count);
 			found -> count = (found -> count) + 1;
 			printf("word: %s  and count after updated %d\n", found->word, found ->count);
+			free(count_w->word);
 			free(count_w);
 			
 			//hput(hword, (void*) count_w, word, strlen(word));
@@ -123,9 +125,12 @@ int main(){
 		else{
 			hput(hword, (void*) count_w, word, strlen(word));
 		}
+
+
 		//	happly(hword, print_countword);
 	}
-	//happly(hword, print_countword);
+	printf("printing hash..");
+	happly(hword, print_countword);
 	happly(hword, delete_countstruct);
 	hclose(hword);
 	webpage_delete(webpage);
