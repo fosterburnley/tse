@@ -13,8 +13,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../utils/pageio.c"
-
+#include <stdbool.h>
 #define MAXWORD 100
+
+void NormalizeWord(char* word){
+	//check for length
+	if (!isalpha(word[0])){
+			return;
+	}
+	else if (strlen(word) <3){
+		return;
+	}
+	else{
+		word[0] = tolower(word[0]);
+	}
+		
+}
+
 
 int main(){
 	webpage_t* webpage;
@@ -27,6 +42,8 @@ int main(){
 	//webpage_getNextWord(webpage, pos, &word);
 	//webpage_getNextWord(webpage, pos, &word);
 		printf("current word: %s\n", word);
+		NormalizeWord(word);
+		printf("normalized word: %s\n", word); 
 		free(word);
 		
 	}
@@ -35,5 +52,4 @@ int main(){
 	
 	webpage_delete(webpage);
 	return 0;
-
 }
