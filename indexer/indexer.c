@@ -19,6 +19,8 @@
 #define MAXWORD 100
 #define MAXHASH 1000
 
+int totalcount = 0;
+
 typedef struct countstruct{
 	char* word;
 	int count;
@@ -55,6 +57,11 @@ void print_countword(void *count_v){
 	}
 	printf("word in hash: %s\n", count_w->word);
 	printf("count: %d\n", count_w->count);
+}
+void sum_count(void *counttype){
+	count_i* count_w;
+	count_w = (count_i*) counttype;
+	totalcount = totalcount+ count_w->count;
 }
 
 void delete_countstruct(void *count_v){
@@ -131,6 +138,14 @@ int main(){
 	}
 	printf("printing hash..");
 	happly(hword, print_countword);
+
+
+	//sum counts
+
+
+
+	happly(hword, sum_count);
+printf("totalcount: %d", totalcount);
 	happly(hword, delete_countstruct);
 	hclose(hword);
 	webpage_delete(webpage);
