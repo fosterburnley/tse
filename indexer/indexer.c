@@ -44,11 +44,11 @@ static bool wsearchfn(void* element, const void *key){
 	}
 	
 	if (strcmp(count_w->word, word)==0){
-		printf("found true");
+	  //printf("found true\n");
 		return true;
 	}
 	else{
-		printf("found false");
+	  //printf("found false\n");
 		return false;
 	}
 
@@ -89,20 +89,30 @@ void delete_countstruct(void *count_v){
 }
 
 /*
- *lowercase word that is greater than 3 letters
+ *lowercase word that is greater than 3 letters and only contains letters
 */ 
-void NormalizeWord(char* word){
+int NormalizeWord(char* word){
 	//check for length
-	if (!isalpha(word[0])){
-			return;
-	}
-	else if (strlen(word) <3){
-		return;
-	}
-	else{
-		word[0] = tolower(word[0]);
-	}
-		
+  if (strlen(word) < 3){
+    return 1; 
+  }
+  for (int i = 0; i < strlen(word); i++){ 
+    if (isalpha(word[i]) == 0){
+      return 1;
+    }
+    word[i] = tolower(word[i]);
+    return 0;     
+  }
+  
+  /*
+    else if (strlen(word) <3){
+    return;
+    }
+    else{
+    word[0] = tolower(word[0]);
+    }
+  */
+  return 0;
 }
 
  
@@ -110,55 +120,58 @@ int main(){
 	webpage_t* webpage;
 	char* word=NULL;
 	hashtable_t* hword;
-	
-	
-	
+		
 	int pos = 0;
 	webpage = pageload(1, "pages-depth3");
 	hword = hopen(MAXHASH);
-
  	
- 	while((pos = webpage_getNextWord(webpage, pos, &word))!=-1){
+ 	while((pos = webpage_getNextWord(webpage, pos, &word))!=-1){  // should this be > 0 ??
 		count_i* count_w;
 		count_w = (count_i*) (malloc(sizeof(count_i)));
 	//webpage_getNextWord(webpage, pos, &word);
 	//webpage_getNextWord(webpage, pos, &word);
 		//		printf("current word: %s\n", word);
-		NormalizeWord(word);
-		printf("normalized word: %s\n", word);
+
+		if (NormalizeWord(word) != 1){
+		  //printf("normalized word: %s\n", word);
 		
-		count_w ->count = 1;
-		count_w ->word = word;
-		//search for word in hashtable
+		  count_w ->count = 1;
+		  count_w ->word = word;
+
+		  //search for word in hashtable
 		//		bool result = wsearchfn(count_w->word, word);
 	  //print_countword((void*)count_w);
 
-		count_i* found = (count_i*)(hsearch(hword, wsearchfn, word, strlen(word)));
-		//		count_w = found;
+		  count_i* found = (count_i*)(hsearch(hword, wsearchfn, word, strlen(word)));
+
+		  // count_w = found;
 		
 		//if wordcount struct is found, add 1 to its count
 		// if not found, put wordcount element in hash and initialize 1 to its count
-		if(found!=NULL){	
+
+		  if(found!=NULL){	
 			//count_w -> word = found -> word;
 			//printf("found word: %s, count: %d\n", found -> word, found->count);
-			found -> count = (found -> count) + 1;
-			printf("word: %s  and count after updated %d\n", found->word, found ->count);
-			free(count_w->word);
-			free(count_w);
+
+		    found -> count = (found -> count) + 1;
+		    printf("word : '%s' | count after updated : %d\n", found->word, found ->count);
+		    free(count_w->word);
+		    free(count_w);
 			
-			//hput(hword, (void*) count_w, word, strlen(word));
-		}
-		else{
-			hput(hword, (void*) count_w, word, strlen(word));
+		    //hput(hword, (void*) count_w, word, strlen(word));
+		  }
+		  else{
+		    hput(hword, (void*) count_w, word, strlen(word));
+		  }
 		}
 	}
-	printf("printing hash..");
+	printf("printing hash... \n");
 	happly(hword, print_countword);
 
 
 	//sum counts
 	happly(hword, sum_count);
-printf("totalcount: %d\n", totalcount);
+	printf("TOTALCOUNT: %d\n", totalcount);
 
 // free remaining bloscks
 	happly(hword, delete_countstruct);
