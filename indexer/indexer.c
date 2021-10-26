@@ -26,32 +26,50 @@ int totalcount = 0;
  *the word count struct with a word and associated count 
 */
 typedef struct countstruct{
-	char* word;
-	int count;
+  char* word;
+  int count;
 
 } count_i;
+
+/*
+ * struct that holds a word and a queue of doccount structs
+ */
+typedef struct wqueue{
+  char * word;
+  queue_t * queue; 
+
+} wqueue_i;
+
+/*
+ * struct that contains document ID and the occurences of a given word in that document
+ */
+typedef struct doccount{
+  int id;
+  int count;
+  
+} doccount_i;
 
 /*
  *search for wordcount struct using word as key
 */ 
 static bool wsearchfn(void* element, const void *key){
-	count_i* count_w;
-	count_w = (count_i*) element;
-	char *word;
-	word = (char*) key;
-	if (count_w->word == NULL){
-		return false;
-	}
-	
-	if (strcmp(count_w->word, word)==0){
-	  //printf("found true\n");
-		return true;
-	}
-	else{
-	  //printf("found false\n");
-		return false;
-	}
-
+  wqueue_i* count_w;
+  count_w = (wqueue_i*) element;
+  char *word;
+  word = (char*) key;
+  if (count_w->word == NULL){
+    return false;
+  }
+  
+  if (strcmp(count_w->word, word)==0){
+    //printf("found true\n");
+    return true;
+  }
+  else{
+     //printf("found false\n");
+    return false;
+  }
+  
 }
 
 /*
@@ -59,33 +77,33 @@ static bool wsearchfn(void* element, const void *key){
 */ 
 void print_countword(void *count_v){
 	
-	count_i* count_w;
-	count_w = (count_i*) count_v;
-	if(count_w == NULL){
-		//		printf("word not found\n");
-		return;
-	}
-	printf("word in hash: %s\n", count_w->word);
-	printf("count: %d\n", count_w->count);
+  count_i* count_w;
+  count_w = (count_i*) count_v;
+  if(count_w == NULL){
+    //		printf("word not found\n");
+    return;
+  }
+  printf("word in hash: %s\n", count_w->word);
+  printf("count: %d\n", count_w->count);
 }
 
 /*
  * sum the counts in hash table
 */ 
 void sum_count(void *counttype){
-	count_i* count_w;
-	count_w = (count_i*) counttype;
-	totalcount = totalcount+ count_w->count;
+  count_i* count_w;
+  count_w = (count_i*) counttype;
+  totalcount = totalcount+ count_w->count;
 }
 
 /*
 * free all the blocks in a word count struct
 */ 
 void delete_countstruct(void *count_v){
-	count_i* count_w = (count_i*) count_v;
-	free(count_w->word);
-	
-	free(count_w);
+  count_i* count_w = (count_i*) count_v;
+  free(count_w->word);
+  
+  free(count_w);
 }
 
 /*
@@ -102,16 +120,7 @@ int NormalizeWord(char* word){
     }
     word[i] = tolower(word[i]);
     return 0;     
-  }
-  
-  /*
-    else if (strlen(word) <3){
-    return;
-    }
-    else{
-    word[0] = tolower(word[0]);
-    }
-  */
+  }  
   return 0;
 }
 
@@ -122,36 +131,36 @@ int main(){
 	hashtable_t* hword;
 		
 	int pos = 0;
-	webpage = pageload(1, "pages-depth3");
+	wcdbpage = pageload(1, "pages-depth3");
 	hword = hopen(MAXHASH);
  	
- 	while((pos = webpage_getNextWord(webpage, pos, &word))!=-1){  // should this be > 0 ??
-		count_i* count_w;
-		count_w = (count_i*) (malloc(sizeof(count_i)));
-	//webpage_getNextWord(webpage, pos, &word);
-	//webpage_getNextWord(webpage, pos, &word);
-		//		printf("current word: %s\n", word);
-
+ 	while((pos = webpage_getNextWord(webpage, pos, &word))!=-1){ 
+		wqueue_i* wqueue;
+		doccount_i* doccount;
+		wqueue = (wqueue_i*) (malloc(sizeof(wqueue_i)));
+	
 		if (NormalizeWord(word) != 1){
-		  //printf("normalized word: %s\n", word);
-		
-		  count_w ->count = 1;
-		  count_w ->word = word;
 
-		  //search for word in hashtable
-		//		bool result = wsearchfn(count_w->word, word);
-	  //print_countword((void*)count_w);
-
-		  count_i* found = (count_i*)(hsearch(hword, wsearchfn, word, strlen(word)));
-
-		  // count_w = found;
-		
-		//if wordcount struct is found, add 1 to its count
-		// if not found, put wordcount element in hash and initialize 1 to its count
+		  doccount ->id = 1;  // hard coded to one for step 4
+		  doccount ->count = 1;
+		  
+		  wqueue ->queue = qopen();
+		  qput(queue, (void*) doccount);
+		  wqueue ->word = word;
+		  
+		  wqueue_i* found = (wqueue_i*)(hsearch(hword, wsearchfn, word, strlen(word)));
+		  		
+		  //if wordcount struct is found, add 1 to its count
+		  //if not found, put wordcount element in hash and initialize 1 to its count
 
 		  if(found!=NULL){	
-			//count_w -> word = found -> word;
-			//printf("found word: %s, count: %d\n", found -> word, found->count);
+		    // found is a representation of the queue holding doccount structs
+		    // will need to get into the queue, and then search again for the document we are working with
+		    // (right now we have document id hardcoded as 1, but this will probably need to change and ride...
+		    // ... off an outer while loop that scans over all the documents
+		    // once we have the doccount struct for the given word in the given document,
+		    // need to increment count by 1
+		    // ~ below needs to be updated using above logic (12pm 10/26/21) ~ 
 
 		    found -> count = (found -> count) + 1;
 		    printf("word : '%s' | count after updated : %d\n", found->word, found ->count);
@@ -161,7 +170,7 @@ int main(){
 		    //hput(hword, (void*) count_w, word, strlen(word));
 		  }
 		  else{
-		    hput(hword, (void*) count_w, word, strlen(word));
+		    hput(hword, (void*) wqueue, word, strlen(word));
 		  }
 		}
 	}
