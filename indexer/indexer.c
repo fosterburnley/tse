@@ -22,6 +22,7 @@
 //global count variable 
 int totalcount = 0;
 int totalhash = 0;
+int frees = 0;
 /*
  *the word count struct with a word and associated count 
 */
@@ -129,6 +130,7 @@ void sum_count(void *counttype){
  */
 void delete_keycount(void* doccount_v){
 	doccount_i* doccount = (doccount_i*) doccount_v;
+	
 	free(doccount);
 }
 /*
@@ -138,10 +140,12 @@ void delete_keycount(void* doccount_v){
 * free each doccount struct
 */ 
 void delete_wordqueue(void *wqueue_v){
-  wqueue_i* wqueue = (wqueue_i*) wqueue_v;
-  free(wqueue->word);
-  qapply(wqueue->queue, delete_keycount);
-	qclose(wqueue->queue);
+  wqueue_i* wqueuehash = (wqueue_i*) wqueue_v;
+  free(wqueuehash->word);
+
+  qapply(wqueuehash->queue, delete_keycount);
+	qclose(wqueuehash->queue);
+	free(wqueuehash);
 }
 
 /*
@@ -165,16 +169,19 @@ int NormalizeWord(char* word){
 
  
 int main(){
-	webpage_t* webpage;
+	
 	hashtable_t* hword;
 	
 	hword = hopen(MAXHASH);
  	// for each document
 	int i = 1;
-
-
-	webpage = pageload(i, "pages-depth3");
-	while(webpage != NULL){
+	webpage_t* webpage;  
+	
+	//	while(i !=83){
+		//		webpage_t* webpage;
+		//webpage = pageload(i, "pages-depth3"); 
+	while((webpage = pageload(i, "pages-depth3"))!=NULL){
+		//webpage = pageload(i, "pages-depth3");	
 		printf("page loaded id: %d\n", i);
 		//		webpage = pageload(i, "pages-depth3");
 		int pos = 0;
@@ -183,13 +190,14 @@ int main(){
 
 		// word to doccount 
 			wqueue_i* wqueuehash;
-			wqueuehash = (wqueue_i*) (malloc(sizeof(wqueue_i)));
-		// docid and count
+			
+		// doc id and count
 			doccount_i* doccount;
 			
 			if (NormalizeWord(word) != 1){
 				//	printf("current word: %s\n", word);	
 				wqueue_i* foundwq = (wqueue_i*)(hsearch(hword, wqsearchfn, word, strlen(word)));
+
 		  //if wordcount struct is found, add 1 to its count
 		  //if not found, put wordcount element in hash and initialize 1 to its count
 
@@ -203,6 +211,7 @@ int main(){
 						//printf("found word- adding 1 to count\n");
 						founddc-> count = founddc->count +1;
 						totalcount++;
+						//free(word);
 						//qapply(wqueuehash->queue, print_doccount);
 						
 					}
@@ -216,8 +225,9 @@ int main(){
 						qput(foundwq->queue, doccount);
 						//qapply(wqueuehash->queue, print_doccount);
 					}
+					free(word);
 					//delete_wordqueue(wqueuehash);
-					free(wqueuehash);
+					//free(wqueuehash);
 				 //				 qclose(wqueuehash->queue);
 				 //free(wqueuehash->word);
 				 
@@ -226,7 +236,8 @@ int main(){
 		    //hput(hword, (void*) count_w, word, strlen(word));
 				}
 				else{
-					// fill in wordqueue struct and put in hash 
+					// fill in wordqueue struct and put in hash
+					wqueuehash = (wqueue_i*) (malloc(sizeof(wqueue_i)));
 					wqueuehash ->queue = qopen();
 					wqueuehash ->word = word;
 					//printf("id : %d\n", i);
@@ -243,14 +254,27 @@ int main(){
 					totalcount++;
 				}
 			}
-			//free(word);
-			//happly(hword, print_hash);
-		 // sleep(2);
+			else{
+				free(word);		
+			}
+	
 		}
+		i++;
+		webpage_delete(webpage);
+		
+		//free(word);
+		/*
 		if ((webpage=pageload(i+1, "pages-depth3"))!=NULL){
 				i++;
 			}
-		printf("last id %d\n", i);
+		else{
+			//webpage= pageload(i, "pages-depth3");
+			//webpage_delete((void*)webpage);
+			printf("last id %d\n", i);
+			break;
+		}
+		*/
+		
 	}
 	
 		 
@@ -274,8 +298,13 @@ int main(){
 
 	// delete hash 
 	hclose(hword);
-
-	// free webpage 
+	//	webpage_delete((void*)webpage);
+	// free webpage
+	// 	webpage=pageload(i-1, "pages-depth3");
+	//pagesave(webpage, i+1, "pagestest");
 	webpage_delete(webpage);
+
+
+	//	printf("total frees %d", frees);
 	return 0;
 }

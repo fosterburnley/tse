@@ -56,6 +56,9 @@ webpage_t *pageload(int id, char *dirnm){
 	FILE *fp = fopen(pathandfile, "r");
 	if (fp == NULL){
 		printf ("warning: can't find file\n");
+		free(url);
+		free(html);
+		//fclose(fp);
 		return NULL;
 	}
 
@@ -91,7 +94,7 @@ webpage_t *pageload(int id, char *dirnm){
 
 	webpage=webpage_new(url, depth, html);
 		free(url);
-	//	free(html);
+		//		free(html);
 	//	webpage = webpage_new(url, depth, html);
 	fclose(fp);
 	
