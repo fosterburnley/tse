@@ -21,7 +21,7 @@
 
 //global count variable 
 int totalcount = 0;
-
+int totalhash = 0;
 /*
  *the word count struct with a word and associated count 
 */
@@ -36,6 +36,8 @@ typedef struct countstruct{
  */
 typedef struct wqueue{
   char * word;
+
+	//queue of doccounts 
   queue_t * queue; 
 
 } wqueue_i;
@@ -50,9 +52,9 @@ typedef struct doccount{
 } doccount_i;
 
 /*
- *search for wordcount struct using word as key
+ *search for wordqueue struct using word as key
 */ 
-static bool wsearchfn(void* element, const void *key){
+static bool wqsearchfn(void* element, const void *key){
   wqueue_i* count_w;
   count_w = (wqueue_i*) element;
   char *word;
@@ -73,18 +75,44 @@ static bool wsearchfn(void* element, const void *key){
 }
 
 /*
+ * element = doccount struct
+ * key is int that you are searching for in doccount struct
+ */
+static bool dcsearchfn(void *element, const void *key){
+	int* pid = (int*)key;
+	int currentid = *pid;
+	doccount_i* doccount = (doccount_i*) element;
+	//int* count = (int*)element;
+	//printf("doc count id: %d", doccount->id);
+	//	if (doccount->id == NULL){
+	//	return false; 
+	//}
+	if (doccount -> id == currentid){
+		return true;
+	}
+	else{
+		return false;
+	}
+	
+}
+
+void print_doccount(void *doccount_v){
+	//printf("hello");
+	doccount_i* doccount= (doccount_i*)(doccount_v);
+	printf("id: %d, count: %d\n\n", doccount-> id, doccount->count); 
+
+}
+/*
  * print the word from wordcount struct 
 */ 
-void print_countword(void *count_v){
+void print_hash(void *wqueue_v){
 	
-  count_i* count_w;
-  count_w = (count_i*) count_v;
-  if(count_w == NULL){
-    //		printf("word not found\n");
-    return;
-  }
-  printf("word in hash: %s\n", count_w->word);
-  printf("count: %d\n", count_w->count);
+  wqueue_i* wqueuehash = (wqueue_i*) wqueue_v;
+	
+  printf("word in hash: %s\n", wqueuehash->word);
+	//	print_doccount((void*)(wqueue->queue));
+ 	qapply(wqueuehash->queue, print_doccount);
+  //printf("count: %d\n", count_w->count);
 }
 
 /*
@@ -97,13 +125,23 @@ void sum_count(void *counttype){
 }
 
 /*
+ * int / int (only free struct) 
+ */
+void delete_keycount(void* doccount_v){
+	doccount_i* doccount = (doccount_i*) doccount_v;
+	free(doccount);
+}
+/*
 * free all the blocks in a word count struct
+* free word 
+* close queue
+* free each doccount struct
 */ 
-void delete_countstruct(void *count_v){
-  count_i* count_w = (count_i*) count_v;
-  free(count_w->word);
-  
-  free(count_w);
+void delete_wordqueue(void *wqueue_v){
+  wqueue_i* wqueue = (wqueue_i*) wqueue_v;
+  free(wqueue->word);
+  qapply(wqueue->queue, delete_keycount);
+	qclose(wqueue->queue);
 }
 
 /*
@@ -119,41 +157,43 @@ int NormalizeWord(char* word){
       return 1;
     }
     word[i] = tolower(word[i]);
+		//		printf("currentword: %s", word);
     return 0;     
-  }  
+  }
   return 0;
 }
 
  
 int main(){
 	webpage_t* webpage;
-	char* word=NULL;
 	hashtable_t* hword;
-		
-	int pos = 0;
-	wcdbpage = pageload(1, "pages-depth3");
-	hword = hopen(MAXHASH);
- 	
- 	while((pos = webpage_getNextWord(webpage, pos, &word))!=-1){ 
-		wqueue_i* wqueue;
-		doccount_i* doccount;
-		wqueue = (wqueue_i*) (malloc(sizeof(wqueue_i)));
 	
-		if (NormalizeWord(word) != 1){
+	hword = hopen(MAXHASH);
+ 	// for each document
+	int i = 1;
 
-		  doccount ->id = 1;  // hard coded to one for step 4
-		  doccount ->count = 1;
-		  
-		  wqueue ->queue = qopen();
-		  qput(queue, (void*) doccount);
-		  wqueue ->word = word;
-		  
-		  wqueue_i* found = (wqueue_i*)(hsearch(hword, wsearchfn, word, strlen(word)));
-		  		
+
+	webpage = pageload(i, "pages-depth3");
+	while(webpage != NULL){
+		printf("page loaded id: %d\n", i);
+		//		webpage = pageload(i, "pages-depth3");
+		int pos = 0;
+		char* word;
+		while((pos = webpage_getNextWord(webpage, pos, &word))!=-1){
+
+		// word to doccount 
+			wqueue_i* wqueuehash;
+			wqueuehash = (wqueue_i*) (malloc(sizeof(wqueue_i)));
+		// docid and count
+			doccount_i* doccount;
+			
+			if (NormalizeWord(word) != 1){
+				//	printf("current word: %s\n", word);	
+				wqueue_i* foundwq = (wqueue_i*)(hsearch(hword, wqsearchfn, word, strlen(word)));
 		  //if wordcount struct is found, add 1 to its count
 		  //if not found, put wordcount element in hash and initialize 1 to its count
 
-		  if(found!=NULL){	
+				if(foundwq!=NULL){	
 		    // found is a representation of the queue holding doccount structs
 		    // will need to get into the queue, and then search again for the document we are working with
 		    // (right now we have document id hardcoded as 1, but this will probably need to change and ride...
@@ -162,29 +202,88 @@ int main(){
 		    // need to increment count by 1
 		    // ~ below needs to be updated using above logic (12pm 10/26/21) ~ 
 
-		    found -> count = (found -> count) + 1;
-		    printf("word : '%s' | count after updated : %d\n", found->word, found ->count);
-		    free(count_w->word);
-		    free(count_w);
-			
-		    //hput(hword, (void*) count_w, word, strlen(word));
-		  }
-		  else{
-		    hput(hword, (void*) wqueue, word, strlen(word));
-		  }
-		}
-	}
-	printf("printing hash... \n");
-	happly(hword, print_countword);
+					// search queue for doccount structs using id as key and count as value
+					//					printf("id: %d, count: %d", foundwq->id, foundwq->count);
+					//printf("finding doccount struct from queue in id : %d\n", i); 
+					doccount_i* founddc = (doccount_i*)(qsearch(foundwq->queue, dcsearchfn, &i));
 
+					if (founddc !=NULL){
+						//printf("found word- adding 1 to count\n");
+						founddc-> count = founddc->count +1;
+						totalcount++;
+						//qapply(wqueuehash->queue, print_doccount);
+						
+					}
+					else{
+						//put in new doccount 
+						doccount = (doccount_i*)malloc(sizeof(doccount_i));
+						doccount ->id = i;  // hard coded to one for step 4
+						doccount ->count = 1;
+						totalcount++;
+						//	 			printf("id to be put in queue : %d\n", i); 
+						qput(foundwq->queue, doccount);
+						//qapply(wqueuehash->queue, print_doccount);
+					}
+					//delete_wordqueue(wqueuehash);
+					free(wqueuehash);
+				 //				 qclose(wqueuehash->queue);
+				 //free(wqueuehash->word);
+				 
+					
+								
+		    //hput(hword, (void*) count_w, word, strlen(word));
+				}
+				else{
+					// fill in wordqueue struct and put in hash 
+					wqueuehash ->queue = qopen();
+					wqueuehash ->word = word;
+					//printf("id : %d\n", i);
+					// put in new doc count
+					doccount = (doccount_i*)malloc(sizeof(doccount_i));
+					doccount -> id = i;  // hard coded to one for step 4
+					doccount ->count = 1;
+					//					printf("doccount id: %d, doccount count: %d\n", doccount -> id, doccount ->count);
+					//put doccount in queue and put queue in hash 
+					qput(wqueuehash->queue, (void*) doccount);
+	 				//qapply(wqueuehash->queue, print_doccount);
+					hput(hword, (void*) wqueuehash, word, strlen(word));
+					//totalhash++;
+					totalcount++;
+				}
+			}
+			//free(word);
+			//happly(hword, print_hash);
+		 // sleep(2);
+		}
+		if ((webpage=pageload(i+1, "pages-depth3"))!=NULL){
+				i++;
+			}
+		printf("last id %d\n", i);
+	}
+	
+		 
+
+		//printf("totalhash: %d\n", totalhash);
+		//happly(hword, print_hash);
+
+	printf("printing hash... \n");
+ 	happly(hword, print_hash);
+
+	printf("total count %d\n", totalcount);
 
 	//sum counts
-	happly(hword, sum_count);
-	printf("TOTALCOUNT: %d\n", totalcount);
+	//happly(hword, sum_count);
+	//printf("TOTALCOUNT: %d\n", totalcount);
 
 // free remaining bloscks
-	happly(hword, delete_countstruct);
+	// free word, close queue, free doccounts within the queue
+	// do that for all wordqueue structs in hash 
+	happly(hword, delete_wordqueue);
+
+	// delete hash 
 	hclose(hword);
+
+	// free webpage 
 	webpage_delete(webpage);
 	return 0;
 }

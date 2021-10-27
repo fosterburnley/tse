@@ -125,7 +125,7 @@ void qapply(queue_t *qp, void (*fn)(void* elementp)){
 	while (currentElement!=NULL){
 		currentElementV = currentElement->data;
 		if (currentElementV == NULL){
-			//       			printf("warning: entered for loop but element is NULL! \n\n");
+        			printf("warning: entered for loop in qapply but element is NULL! \n\n");
 		}
 		fn(currentElementV);
 		currentElement=currentElement->next;
@@ -148,7 +148,7 @@ void* qsearch(queue_t *qp,
 	element_i *p;
 	//	element_i *p_i;
 	bool result;
-  queue_i *rp = (queue_i*) qp; 
+  queue_i *rp = (queue_i*) qp;
 	// for loop to go through each element in the list
 	for (p = rp->front; p != NULL; p=p->next){
 		//put in the data of the current element, skeyp should only be the data already

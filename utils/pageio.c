@@ -14,7 +14,7 @@
 #include <webpage.c>
 #include <string.h>
 #include <stdbool.h>
-#define MAXARRAY 10000
+#define MAXARRAY 500000
 /*
  * saves a page to pages directory 
  */
@@ -54,10 +54,13 @@ webpage_t *pageload(int id, char *dirnm){
 	char pathandfile[MAXARRAY];
 	sprintf(pathandfile, "../pages/%s/%d", dirnm, id); 
 	FILE *fp = fopen(pathandfile, "r");
-	
+	if (fp == NULL){
+		printf ("warning: can't find file\n");
+		return NULL;
+	}
 
 	fscanf(fp, "%s %d %d", url, &depth, &htmllen); 
-	printf("url: %s\n", url);
+	//	printf("url: %s\n", url);
 	while(fscanf(fp, "%[^\n]", temphtml)!=EOF){
 		fgetc(fp);
 		for (int i = 0; i < sizeof(temphtml); i++){
