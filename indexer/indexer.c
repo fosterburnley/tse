@@ -194,15 +194,7 @@ int main(){
 		  //if not found, put wordcount element in hash and initialize 1 to its count
 
 				if(foundwq!=NULL){	
-		    // found is a representation of the queue holding doccount structs
-		    // will need to get into the queue, and then search again for the document we are working with
-		    // (right now we have document id hardcoded as 1, but this will probably need to change and ride...
-		    // ... off an outer while loop that scans over all the documents
-		    // once we have the doccount struct for the given word in the given document,
-		    // need to increment count by 1
-		    // ~ below needs to be updated using above logic (12pm 10/26/21) ~ 
-
-					// search queue for doccount structs using id as key and count as value
+		   					// search queue for doccount structs using id as key and count as value
 					//					printf("id: %d, count: %d", foundwq->id, foundwq->count);
 					//printf("finding doccount struct from queue in id : %d\n", i); 
 					doccount_i* founddc = (doccount_i*)(qsearch(foundwq->queue, dcsearchfn, &i));
