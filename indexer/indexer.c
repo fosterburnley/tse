@@ -168,19 +168,19 @@ int NormalizeWord(char* word){
 }
 
  
-int main(){
-	
+int main(int argc, char **argv){
 	hashtable_t* hword;
 	
 	hword = hopen(MAXHASH);
  	// for each document
 	int i = 1;
+	int max_i = atoi(argv[1]);
 	webpage_t* webpage;  
 	
 	//	while(i !=83){
 		//		webpage_t* webpage;
 		//webpage = pageload(i, "pages-depth3"); 
-	while((webpage = pageload(i, "pages-depth3"))!=NULL){
+	while(((webpage = pageload(i, "pages-depth3"))!=NULL) && i<=max_i){
 		//webpage = pageload(i, "pages-depth3");	
 		printf("page loaded id: %d\n", i);
 		//		webpage = pageload(i, "pages-depth3");
