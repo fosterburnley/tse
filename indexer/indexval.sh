@@ -1,3 +1,3 @@
 #!/bin/bash
 
-valgrind -v --leak-check=full --track-origins=yes indexer
+valgrind -v --leak-check=full --track-origins=yes indexer 5

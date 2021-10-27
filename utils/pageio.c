@@ -29,7 +29,7 @@ int32_t pagesave(webpage_t *pagep, int id, char *dirname){
 
 	// webpage_getHTMLlen adjusted to account for extra new line added in load page
 
-		int htmllenAdj = (webpage_getHTMLlen(pagep))-1;
+	int htmllenAdj = (webpage_getHTMLlen(pagep))-1;
   printf("pagesaved at %s: %s with current depth: %d\n", pathandfile, webpage_getURL(pagep), webpage_getDepth(pagep)); 
   fprintf(fp, "%s\n%d\n%d%s\n", webpage_getURL(pagep), webpage_getDepth(pagep), htmllenAdj, webpage_getHTML(pagep));                                                                                                    
   fclose(fp);                                                                                                          

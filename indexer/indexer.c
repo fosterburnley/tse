@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../utils/pageio.c"
+#include "../utils/indexio.c"
 #include "../utils/hash.c"
 #include "../utils/queue.c"   
 #include <stdbool.h>
@@ -22,7 +23,7 @@
 //global count variable 
 int totalcount = 0;
 int totalhash = 0;
-int frees = 0;
+//int frees = 0;
 /*
  *the word count struct with a word and associated count 
 */
@@ -32,9 +33,11 @@ typedef struct countstruct{
 
 } count_i;
 
+
 /*
  * struct that holds a word and a queue of doccount structs
  */
+/*
 typedef struct wqueue{
   char * word;
 
@@ -45,12 +48,13 @@ typedef struct wqueue{
 
 /*
  * struct that contains document ID and the occurences of a given word in that document
- */
+ 
 typedef struct doccount{
   int id;
   int count;
   
 } doccount_i;
+*/
 
 /*
  *search for wordqueue struct using word as key
@@ -169,6 +173,11 @@ int NormalizeWord(char* word){
 
  
 int main(int argc, char **argv){
+	if (argc < 2){
+		printf("usage error: <indexer> <maxpageid>");
+		exit(EXIT_FAILURE);
+	}
+
 	hashtable_t* hword;
 	
 	hword = hopen(MAXHASH);
@@ -176,7 +185,7 @@ int main(int argc, char **argv){
 	int i = 1;
 	int max_i = atoi(argv[1]);
 	webpage_t* webpage;  
-	
+ 
 	//	while(i !=83){
 		//		webpage_t* webpage;
 		//webpage = pageload(i, "pages-depth3"); 
@@ -287,6 +296,8 @@ int main(int argc, char **argv){
 
 	printf("total count %d\n", totalcount);
 
+	indexsave(hword, "indexnm", "indexes");
+	//	indexload("indexnm", "indexes");
 	//sum counts
 	//happly(hword, sum_count);
 	//printf("TOTALCOUNT: %d\n", totalcount);
