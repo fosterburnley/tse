@@ -62,18 +62,18 @@ void getWord(void *element){
  */
 
 int32_t indexsave(hashtable_t *hashtable, char *filename, char *dirname){
-	char pathandfile[100];
-	sprintf(pathandfile, "../%s/%s", dirname, filename);
-	printf("saving file in %s\n", pathandfile);
- 	fp = fopen(pathandfile, "w+");
-	if (fp==NULL){
-		printf("warning: file is NULL\n");
-		return(1);
-	}
-	happly(hashtable, getWord);
-	//	fprintf(fp, "\n");
-	fclose(fp);
-	return 0;
+  char pathandfile[100];
+  sprintf(pathandfile, "../%s/%s", dirname, filename);
+  printf("saving file in %s\n", pathandfile);
+  fp = fopen(pathandfile, "w+");
+  if (fp==NULL){
+    printf("warning: file is NULL\n");
+    return(1);
+  }
+  happly(hashtable, getWord);
+  //	fprintf(fp, "\n");
+  fclose(fp);
+  return 0;
 }
 
 /* indexload should load the file <filename> in directory <dirname>
@@ -83,5 +83,10 @@ int32_t indexsave(hashtable_t *hashtable, char *filename, char *dirname){
  */
 
 hashtable_t *indexload(char *filename, char *dirname){
-	
+  char pathandfile[100];
+  sprintf(pathandfile, "../%s/%s", dirname, filename);
+  printf("loading file in %s\n", pathandfile);
+  fp = fopen(pathandfile, "r");
+  // ^ unsure if this is right ^ need to load/create and index for the file
+  
 }
