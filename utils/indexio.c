@@ -17,7 +17,7 @@
 #include <hash.h>
 #include <queue.h>
 //#include "../indexer/indexer.c"
-
+#define MAXWORD 100
 #define MAXARRAY 1000
 FILE *fp;                                                                                                                                
 
@@ -84,36 +84,73 @@ int32_t indexsave(hashtable_t *hashtable, char *filename, char *dirname){
 
 hashtable_t* indexload(char *filename, char *dirname){
 	char pathandfile[MAXARRAY]="";
-	char* word;
+ 	char* word;
+	char newline;
 	doccount_i* doccount;
 	wqueue_i* wqhash;
-	int id;
-	int count; 
+	int id=0;
+	int count=0; 
 	hashtable_t* hword;
 	queue_t* hqueue;
-	
+	bool wempty=false;
+	bool dempty=false; 
+	char tempword[MAXARRAY]="";
 	
 	sprintf(pathandfile, "../indexes/indexnm");
-	FILE *fpload = fopen(pathandfile, "r");
-	printf("file at %s", pathandfile);
+	FILE *fp;
+	fp = fopen(pathandfile, "r");
+	printf("file at %s\n", pathandfile);
 	
-	if (fpload == NULL){
+	if (fp == NULL){
 		printf("warning: can't find file for index");
 		return NULL;
 	}
-	
+	//word = (char*) malloc(sizeof(char)); 
+	//fscanf(fp, "%s", word);
+ 	//strcpy(lword, wordArray);
+	//	printf("word:%s\n", word);
+		
 	hword = hopen(MAXARRAY);
-	while(fscanf(fpload, "%[^\n]", word)!=EOF){
+	while(!wempty){
    	//while in the same word
 		// put word in wqhash
-		fscanf(fpload, "%s", word);
-	  wqhash= (wqueue_i*)sizeof(wqueue_i);
-		word = (char*)sizeof(char);
+		//strcpy(word, wordArray);
+
+	  memset(tempword, '0', sizeof(tempword)); 
+		fscanf(fp, "%s", tempword);
+		printf("tempword: %s\n", tempword);
+		if(tempword[0]=='0'){
+			//printf("end of file: can't find word\n");
+			wempty=true;
+			break;
+		}
+		word = (char*)malloc(MAXWORD*(sizeof(char)));
+		strcpy(word, tempword);
+		printf("word: %s\n", word);	
+
+		
+	  wqhash= (wqueue_i*)malloc(sizeof(wqueue_i));
+		//		word = (char*)sizeof(char);
 		wqhash->word = word;
-		hqueue = qopen();
-		while(fscanf(fpload, "%d %d[^\n]", &id, &count)!=EOF){
+			hqueue = qopen();
+		while(!dempty){
 		//fscanf(fpload, "%d %d", id, count);
-			doccount = (doccount_i*)sizeof(doccount_i);
+		
+			doccount = (doccount_i*)malloc(sizeof(doccount_i));
+			fscanf(fp, "%d", &id);
+			//if (id==-1 && count ==-1){
+			//dempty=true;
+			//break;
+			//	}  
+			fscanf(fp, "%d[^\n]", &count);
+			if (id == -1 && count == -1){
+				dempty=true;
+				free(doccount);
+				break;
+			}
+			//newline = fgetc(fp);
+			//printf("%c fscanf result: %c", newline);
+			//			printf("id: %d, count: %d\n", id, count);
 			doccount -> id = id;
 			doccount->count = count;
 
@@ -122,17 +159,27 @@ hashtable_t* indexload(char *filename, char *dirname){
 
 			// put queue in wqhash
 			wqhash->queue = hqueue;
+
+			id = -1;
+			count = -1;
 			//if reach end of line
-			if (fgetc(fpload)==EOF){
-				break;
-			}
+			//if (id == 0 && count == 0){
+				//dempty=true;
+			//fgetc(fp);
+			//fgetc(fp);
+			//}
 		}
 		// put wqhash in hash with word as key
 		hput(hword, wqhash, word, strlen(word));
-		if (fgetc(fpload) == EOF){
-			break;
-		}
+		dempty=false;
+		//		word= "";
+		//if (fgetc(fp) == EOF){
+			//wempty=true;
+			//}
 	}
-	fclose(fpload);
+	
+	fclose(fp);
+	//	hclose(hword);
 	return hword;
 }
+

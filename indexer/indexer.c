@@ -296,8 +296,15 @@ int main(int argc, char **argv){
 
 	printf("total count %d\n", totalcount);
 
-	indexsave(hword, "indexnm", "indexes");
-	//	indexload("indexnm", "indexes");
+		indexsave(hword, "indexnm", "indexes");
+	//printf("loading indexnm...");
+	
+		//	hashtable_i* hload;
+	//hload = hopen(1000000);
+  //hload = indexload("indexnm", "indexes");
+	//printf("printing hash after loaded by indexnm..");
+	//happly(hload, print_hash);
+	//indexsave(hload, "indexnm2", "indexes"); 	
 	//sum counts
 	//happly(hword, sum_count);
 	//printf("TOTALCOUNT: %d\n", totalcount);
@@ -306,9 +313,10 @@ int main(int argc, char **argv){
 	// free word, close queue, free doccounts within the queue
 	// do that for all wordqueue structs in hash 
 	happly(hword, delete_wordqueue);
-
+	//happly(hload, delete_wordqueue);
 	// delete hash 
 	hclose(hword);
+	//hclose(hload);
 	//	webpage_delete((void*)webpage);
 	// free webpage
 	// 	webpage=pageload(i-1, "pages-depth3");
