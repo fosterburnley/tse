@@ -62,18 +62,18 @@ void getWord(void *element){
  */
 
 int32_t indexsave(hashtable_t *hashtable, char *filename, char *dirname){
-  char pathandfile[100];
-  sprintf(pathandfile, "../%s/%s", dirname, filename);
-  printf("saving file in %s\n", pathandfile);
-  fp = fopen(pathandfile, "w+");
-  if (fp==NULL){
-    printf("warning: file is NULL\n");
-    return(1);
-  }
-  happly(hashtable, getWord);
-  //	fprintf(fp, "\n");
-  fclose(fp);
-  return 0;
+	char pathandfile[100];
+	sprintf(pathandfile, "../%s/%s", dirname, filename);
+	printf("saving file in %s\n", pathandfile);
+ 	fp = fopen(pathandfile, "w+");
+	if (fp==NULL){
+		printf("warning: file is NULL\n");
+		return(1);
+	}
+	happly(hashtable, getWord);
+	//	fprintf(fp, "\n");
+	fclose(fp);
+	return 0;
 }
 
 /* indexload should load the file <filename> in directory <dirname>
@@ -82,11 +82,57 @@ int32_t indexsave(hashtable_t *hashtable, char *filename, char *dirname){
  *
  */
 
-hashtable_t *indexload(char *filename, char *dirname){
-  char pathandfile[100];
-  sprintf(pathandfile, "../%s/%s", dirname, filename);
-  printf("loading file in %s\n", pathandfile);
-  fp = fopen(pathandfile, "r");
-  // ^ unsure if this is right ^ need to load/create and index for the file
-  
+hashtable_t* indexload(char *filename, char *dirname){
+	char pathandfile[MAXARRAY]="";
+	char* word;
+	doccount_i* doccount;
+	wqueue_i* wqhash;
+	int id;
+	int count; 
+	hashtable_t* hword;
+	queue_t* hqueue;
+	
+	
+	sprintf(pathandfile, "../indexes/indexnm");
+	FILE *fpload = fopen(pathandfile, "r");
+	printf("file at %s", pathandfile);
+	
+	if (fpload == NULL){
+		printf("warning: can't find file for index");
+		return NULL;
+	}
+	
+	hword = hopen(MAXARRAY);
+	while(fscanf(fpload, "%[^\n]", word)!=EOF){
+   	//while in the same word
+		// put word in wqhash
+		fscanf(fpload, "%s", word);
+	  wqhash= (wqueue_i*)sizeof(wqueue_i);
+		word = (char*)sizeof(char);
+		wqhash->word = word;
+		hqueue = qopen();
+		while(fscanf(fpload, "%d %d[^\n]", &id, &count)!=EOF){
+		//fscanf(fpload, "%d %d", id, count);
+			doccount = (doccount_i*)sizeof(doccount_i);
+			doccount -> id = id;
+			doccount->count = count;
+
+			// put doccount in queue
+			qput(hqueue, doccount);
+
+			// put queue in wqhash
+			wqhash->queue = hqueue;
+			//if reach end of line
+			if (fgetc(fpload)==EOF){
+				break;
+			}
+		}
+		// put wqhash in hash with word as key
+		hput(hword, wqhash, word, strlen(word));
+		if (fgetc(fpload) == EOF){
+			break;
+		}
+	}
+	fclose(fpload);
+	return hword;
 }
