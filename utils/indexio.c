@@ -67,7 +67,7 @@ int32_t indexsave(hashtable_t *hashtable, char *filename, char *dirname){
 	printf("saving file in %s\n", pathandfile);
  	fp = fopen(pathandfile, "w+");
 	if (fp==NULL){
-		printf("warning: file is NULL\n");
+		printf("warning: cannot find directory\n");
 		return(1);
 	}
 	happly(hashtable, getWord);

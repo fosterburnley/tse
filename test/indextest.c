@@ -67,7 +67,7 @@ int main(){
 	printf("printing hash after loaded by indexnm..\n");
 	
 	happly(hload, print_hash);
-	indexsave(hload, "indexnm82", "indexes");
+	indexsave(hload, "indexnm6", "indexes");
 	happly(hload, delete_wordqueue);
 	//printf("saving indexnm..\n"); 
 

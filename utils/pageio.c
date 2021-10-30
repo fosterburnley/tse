@@ -52,7 +52,7 @@ webpage_t *pageload(int id, char *dirnm){
 	webpage_t* webpage;
 	bool isempty;
 	char pathandfile[MAXARRAY];
-	sprintf(pathandfile, "../pages/%s/%d", dirnm, id); 
+	sprintf(pathandfile, "../%s/%d", dirnm, id); 
 	FILE *fp = fopen(pathandfile, "r");
 	if (fp == NULL){
 		printf ("warning: can't find file\n");

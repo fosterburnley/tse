@@ -172,9 +172,9 @@ int NormalizeWord(char* word){
 }
 
  
-int main(int argc, char **argv){
-	if (argc < 2){
-		printf("usage error: <indexer> <maxpageid>");
+int main(int argc, char *argv[]){
+	if (argc < 3){
+		printf("usage error: <pagedir> <indexnm>");
 		exit(EXIT_FAILURE);
 	}
 
@@ -183,13 +183,13 @@ int main(int argc, char **argv){
 	hword = hopen(MAXHASH);
  	// for each document
 	int i = 1;
-	int max_i = atoi(argv[1]);
+	char *filename = argv[2];
 	webpage_t* webpage;  
- 
+	char *pagedir = argv[1];
 	//	while(i !=83){
 		//		webpage_t* webpage;
 		//webpage = pageload(i, "pages-depth3"); 
-	while(((webpage = pageload(i, "pages-depth3"))!=NULL) && i<=max_i){
+	while(((webpage = pageload(i, pagedir))!=NULL)){
 		//webpage = pageload(i, "pages-depth3");	
 		printf("page loaded id: %d\n", i);
 		//		webpage = pageload(i, "pages-depth3");
@@ -296,7 +296,7 @@ int main(int argc, char **argv){
 
 	printf("total count %d\n", totalcount);
 
-		indexsave(hword, "indexnm", "indexes");
+	indexsave(hword, filename, pagedir);
 	//printf("loading indexnm...");
 	
 		//	hashtable_i* hload;
