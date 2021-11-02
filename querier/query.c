@@ -68,19 +68,16 @@ int main(){
 	char *strarr[MAXSTRINGS];
 	char tempstr[MAXCHAR];
 	char tempword[MAXCHAR];
-	char *word;
-	char *str; 
+	char * str = (char*) malloc(sizeof(char));    
+	char * word = (char*) malloc(sizeof(char));
 	char newline;
 	bool isalpha = false;
-	bool islength = false; 
-	while (loop){
-		printf(">");
-		str = (char*) malloc(sizeof(char));    
-		word = (char*) malloc(sizeof(char));
-		scanf("%[^\n]%c", str, &newline);
+	bool islength = false;
+	//need scanf in declaration of the loop but could be for or while haven't nailed down yet
+	for(printf(">");scanf(" %[^\n]%c", str, &newline)!=EOF;printf(">")){
 		printf("str: %s\n", str);
 		memset(tempstr, '\0', sizeof(tempstr));
-		word = strtok(str, " ");
+		word = strtok(str, " \t");
 		printf("word within string: %s\n", word);
 		
 		while (word != NULL){
@@ -111,7 +108,7 @@ int main(){
 			printf("tempword: %s\n", tempword);
 			strcat(tempstr, tempword);
 			printf("tempstr: %s\n", tempstr); 
-			word = strtok(NULL, " ");
+			word = strtok(NULL, " \t");
 			printf("word within string: %s\n", word);
 		}
 
@@ -124,7 +121,9 @@ int main(){
 		else{
 			printarrstr(strarr);   
 		}
+		
 	}
+	printf("\n");
 		// while there are more words in string
 		/*
 		while (word !=NULL){
