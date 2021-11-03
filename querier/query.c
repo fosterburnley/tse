@@ -26,6 +26,25 @@ void printarrstr(char *strarr[]){
 
 }
 
+
+void freeword(char *str){
+	char* word; 
+	word = strtok(str, " ");
+	while (word != NULL){
+		free(word);
+		word = strtok(str, " ");
+	}
+
+}
+void freestrarr(char *strarr[]){
+	for (int i = 0; strarr[i] !=NULL; i++){
+		printf("freed string in element %d: %s\n", i, strarr[i]);
+		//freeword(strarr[i]);
+		free(strarr[i]);
+	}
+	
+}
+
 bool checkEnd(char *word){
 
 	if ((strcmp(word, "EOF")==0) || (strcmp(word, "eof")==0)){
@@ -68,29 +87,35 @@ int main(){
 	char *strarr[MAXSTRINGS];
 	char tempstr[MAXCHAR];
 	char tempword[MAXCHAR];
-	char * str = (char*) malloc(sizeof(char));    
-	char * word = (char*) malloc(sizeof(char));
+	char *word;
+	char *str; 
 	char newline;
 	bool isalpha = false;
 	bool islength = false;
-	//need scanf in declaration of the loop but could be for or while haven't nailed down yet
-	for(printf(">");scanf(" %[^\n]%c", str, &newline)!=EOF;printf(">")){
+	word = (char*) malloc(MAXCHAR * sizeof(char));
+	//	strarr = (char*) malloc(((MAXSTRINGS * MAXCHAR) * sizeof(char))); 
+	while (loop){
+		printf(">");
+		str = (char*) malloc(MAXSTRINGS * sizeof(char));    
+		scanf("%[^\n]%c", str, &newline);
 		printf("str: %s\n", str);
 		memset(tempstr, '\0', sizeof(tempstr));
-		word = strtok(str, " \t");
+		word = strtok(str, " ");
 		printf("word within string: %s\n", word);
-		
+		//		if (word ==NULL){
+		//	free(word);
+		//}
 		while (word != NULL){
 			if (checkEnd(word)==true){
 				printf("program terminated\n");
 				loop=false;
-				free(word);
+				//		free(word);
 				//printarrstr(strarr);
 				break;
 			}
 			if (checkAlpha(word)){
 				printf("invalid query because characters not in alphabet\n");
-				//				free(word);
+				//free(word);
 				isalpha = true;
 				break; 
 			}
@@ -100,30 +125,43 @@ int main(){
 				islength = true;
 				break;
 			}
-
-			normalizeWord(word);
-			printf("tempstr: %s\n", tempstr);  
-			strcpy(tempword, word);
-			strcat(tempword, " ");
-			printf("tempword: %s\n", tempword);
-			strcat(tempstr, tempword);
-			printf("tempstr: %s\n", tempstr); 
-			word = strtok(NULL, " \t");
-			printf("word within string: %s\n", word);
+			if (!isalpha || !islength || loop){
+				normalizeWord(word);
+				printf("tempstr: %s\n", tempstr);
+				strcpy(tempword, word);
+				strcat(tempword, " ");
+				printf("tempword: %s\n", tempword);
+				strcat(tempstr, tempword);
+				printf("tempstr: %s\n", tempstr);
+				word = strtok(NULL, " ");
+				printf("word within string: %s\n", word);
+				//				str = (char*)realloc(str, 30*sizeof(char));
+				//reset 
+				isalpha = false;
+				islength = false;
+				loop = true;
+			}
 		}
-
+		// continue 
 		if (!isalpha && !islength && loop){
 			strcpy(str, tempstr);
 			strarr[i]=str;
 			printarrstr(strarr); 
 			i++;
+			//free(word);
 		}
+		//stop
 		else{
-			printarrstr(strarr);   
+			printarrstr(strarr);
+			free(word);
+			//free(str);
 		}
 		
 	}
-	printf("\n");
+	//free(word);
+	freestrarr(strarr);
+	
+}
 		// while there are more words in string
 		/*
 		while (word !=NULL){
@@ -164,4 +202,3 @@ int main(){
 		*/
 		//		}
 		
-}
