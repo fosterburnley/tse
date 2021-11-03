@@ -106,7 +106,7 @@ int main(){
 		scanf("%[^\n]%c", str, &newline);
 		printf("str: %s\n", str);
 		memset(tempstr, '\0', sizeof(tempstr));
-		word = strtok(str, " ");
+		word = strtok(str, " \t");
 		printf("word within string: %s\n", word);
 		//		if (word ==NULL){
 		//	free(word);
