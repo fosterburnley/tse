@@ -118,6 +118,7 @@ void getCount(void* doccount_v){
 	
 	totalcount = doccount->count + totalcount;
 
+
 }
 
 static bool wqsearchfn(void* element, const void *key){                                                                                                          
@@ -153,9 +154,15 @@ void findWordandCount(hashtable_t* hash, char *word){
 }
 
 void updateLowestCount(){
+	printf("total count: %d vs lowest count %d\n", totalcount, lowestcount);
 	if (totalcount < lowestcount){
 		lowestcount = totalcount;
+			printf("lowestcount %d and total count %d\n", lowestcount, totalcount);	 
 	}
+	else{
+		return;
+	}
+
 	
 	
 }
@@ -170,12 +177,13 @@ int main(){
 	char newline;
 	bool isalpha = false;
 	bool islength = false;
+	bool firstword = true;
 	//word = (char*) malloc(MAXCHAR * sizeof(char));
 	//	strarr = (char*) malloc(((MAXSTRINGS * MAXCHAR) * sizeof(char)));
 	char result[MAXSTRINGS];
 	
 	hashtable_t* hash;
-	hash = indexload("indexnm1", "pages-depth3");
+	hash = indexload("indexnm2", "pages-depth3");
 	
  
 	// load index into hash
@@ -198,7 +206,7 @@ int main(){
 		//get first word of string 
 		word = strtok(str, " \t");
 		printf("word within string: %s\n", word);
-
+		firstword = true;
 		
 		while (word != NULL){
 			
@@ -231,16 +239,18 @@ int main(){
 
 				// update totalcount for each word
 				findWordandCount(hash, word);
+				printf("totalcount for word %s: %d\n", word, totalcount);
 				// update count for the specific word if not first time through
 				// if first time through lowest count = total count for the word
-				
-				if (tempstr == NULL){
+
+				if (firstword){
+					lowestcount = totalcount;
+					}
+				else{
 				updateLowestCount();
 				}
-				else{
-					lowestcount = totalcount;
-				}
-
+				printf("lowest count after updating word %s: %d\n", word, lowestcount); 
+				
 				
 				// build string 
 				strcat(tempstr, tempword);
@@ -255,18 +265,18 @@ int main(){
 				//reset counts
 				totalcount = 0;
 				
-				
 
 			}
 			// get next word
 			word = strtok(NULL, " \t");
 			printf("word within string: %s\n", word);
-			printf("str: %s\n", str); 
-			
-			//reset checks
+
+			//reset and update checks
 			isalpha = false;
 			islength = false;
 			loop = true;
+			firstword= false;
+			//updateLowestCount();  
 		}
 		// now combine tempstr into str and put into str array
 		// this is when the program still needs to run but finished with one query 
@@ -285,20 +295,13 @@ int main(){
 			lowestcount = 0;
 
 			// move i up 1 for string array position update  
-			i++;
-						 
-						 
+			i++;			 
 			
 		}
 		
 		//this is when eof is called 
 		else{
 			printarrstr(strarr);
-			//printf("freeing str: %s and its address: %p\n", str, str);
-			//printf("address of str: %p; and address of word left: %p\n", str, word);
-			//word = NULL;
-			//printf("word left after str in array: %s and its address: %p\n", word, word);
-			//free(word);
 			free(str);
 		}
 			
