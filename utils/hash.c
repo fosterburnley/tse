@@ -11,7 +11,7 @@
 #include <hash.h>
 
 
-#define MAXCHAR 10
+#define MAXCHAR 100
 #define MAXARR 2000
 
 /* 
@@ -215,7 +215,7 @@ void happly(hashtable_t *htp, void(*fn)(void*ep)){
   else return false;  
 	}*/
 
-void *hsearch(hashtable_t *htp, bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen){
+void* hsearch(hashtable_t *htp, bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen){
   uint32_t loc;
   hashtable_i*hh = (hashtable_i*)htp;
   queue_t*qp;//pointer to the queue to be searched

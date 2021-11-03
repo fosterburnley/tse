@@ -14,10 +14,15 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include<string.h>
+#include"../utils/indexio.c"
+#include "../utils/hash.c"
+
 
 #define MAXSTRINGS 1000
 #define MAXCHAR 100
 
+int totalcount = 0;
+int lowestcount = 0;
 
 void printarrstr(char *strarr[]){
 	for (int i=0; strarr[i] != NULL; i++){
@@ -26,6 +31,25 @@ void printarrstr(char *strarr[]){
 
 }
 
+
+/*                                                                                                                                                               
+ * int / int (only free struct)                                                                                                                                  
+ */                                                                                                                                                              
+void delete_keycount(void* doccount_v){                                                                                                                          
+  doccount_i* doccount = (doccount_i*) doccount_v;
+                                                                                                                                                                 
+  free(doccount);                                                                                                                                                
+}
+
+
+void delete_wordqueue(void *wqueue_v){                                                                                                                           
+  wqueue_i* wqueuehash = (wqueue_i*) wqueue_v;                                                                                                                   
+  free(wqueuehash->word);                                                                                                                                       
+                                                                                                                                                                 
+  qapply(wqueuehash->queue, delete_keycount);                                                                                                                    
+  qclose(wqueuehash->queue);                                                                                                                                     
+  free(wqueuehash);                                                                                                                                              
+}  
 
 void freeword(char *str){
 	char* word; 
@@ -38,7 +62,7 @@ void freeword(char *str){
 }
 void freestrarr(char *strarr[]){
 	for (int i = 0; strarr[i] !=NULL; i++){
-		printf("freed string in element %d: %s\n", i, strarr[i]);
+		//		printf("freed string in element %d: %s\n", i, strarr[i]);
 		//freeword(strarr[i]);
 		free(strarr[i]);
 	}
@@ -79,8 +103,62 @@ int normalizeWord(char *word){
 	return 0;
 }
 
+bool checkAndOr(char *word){
+	if ((strcmp(word, "or")==0) || (strcmp(word, "and")==0)){
+		return true;
+	}
+	return false; 
+}
 
+/*
+ *
+ */
+void getCount(void* doccount_v){
+	doccount_i* doccount = (doccount_i*) doccount_v;
+	
+	totalcount = doccount->count + totalcount;
 
+}
+
+static bool wqsearchfn(void* element, const void *key){                                                                                                          
+  wqueue_i* count_w;                                                                                                                                             
+  count_w = (wqueue_i*) element;                                                                                                                                 
+  char *word;                                                                                                                                                    
+  word = (char*) key;                                                                                                                                            
+  if (count_w->word == NULL){                                                                                                                                    
+    return false;                                                                                                                                                
+  }                                                                                                                                                              
+                                                                                                                                                                 
+  if (strcmp(count_w->word, word)==0){                                                                                                                           
+    //printf("found true\n");                                                                                                                                    
+    return true;                                                                                                                                                 
+  }                                                                                                                                                              
+  else{                                                                                                                                                          
+     //printf("found false\n");                                                                                                                                  
+    return false;                                                                                                                                               
+  }                                                                                                                                                                                                                                                                                                                              
+}            
+
+void findWordandCount(hashtable_t* hash, char *word){
+	
+  wqueue_i* found = (wqueue_i*) hsearch(hash, wqsearchfn, word, strlen(word));
+	if (found !=NULL){
+	qapply(found->queue, getCount);
+	}
+	else{
+		return;
+	}
+	//printf("total count for word %s: %d", word, count);
+	
+}
+
+void updateLowestCount(){
+	if (totalcount < lowestcount){
+		lowestcount = totalcount;
+	}
+	
+	
+}
 int main(){
 	bool loop = true;
 	int i = 0;
@@ -94,7 +172,14 @@ int main(){
 	bool islength = false;
 	//word = (char*) malloc(MAXCHAR * sizeof(char));
 	//	strarr = (char*) malloc(((MAXSTRINGS * MAXCHAR) * sizeof(char)));
-
+	char result[MAXSTRINGS];
+	
+	hashtable_t* hash;
+	hash = indexload("indexnm1", "pages-depth3");
+	
+ 
+	// load index into hash
+	
 	for (int i = 0; i < MAXSTRINGS; i++)
 		{
 			strarr[i]=NULL;
@@ -102,16 +187,22 @@ int main(){
 	
 	while (loop){
 		printf(">");
-		str = (char*) malloc(MAXSTRINGS * sizeof(char));    
+		str = (char*) malloc(MAXSTRINGS * sizeof(char));
+
+		//scan entire string 
 		scanf("%[^\n]%c", str, &newline);
+		
 		printf("str: %s\n", str);
 		memset(tempstr, '\0', sizeof(tempstr));
+
+		//get first word of string 
 		word = strtok(str, " \t");
 		printf("word within string: %s\n", word);
-		//		if (word ==NULL){
-		//	free(word);
-		//}
+
+		
 		while (word != NULL){
+			
+			//check conditions
 			if (checkEnd(word)==true){
 				printf("program terminated\n");
 				loop=false;
@@ -122,62 +213,101 @@ int main(){
 			if (checkAlpha(word)){
 				printf("invalid query because characters not in alphabet\n");
 				//free(word);
-				isalpha = true;
-				break; 
+				isalpha = true; 
 			}
 			if (checkLength(word)){
 				printf("invalid query because string less than 3 characters\n");
 				//free(word);
 				islength = true;
-				break;
 			}
-			if (!isalpha || !islength || loop){
-				normalizeWord(word);
-				//	printf("tempstr: %s\n", tempstr);
+			
+			normalizeWord(word);
+
+			//exclude and, or, non alphabets, short words 
+			// if all conditions are good, put counts with each word 
+			if (!checkAndOr(word) && !isalpha && !islength){
 				strcpy(tempword, word);
 				strcat(tempword, " ");
-				//printf("tempword: %s\n", tempword);
+
+				// update totalcount for each word
+				findWordandCount(hash, word);
+				// update count for the specific word if not first time through
+				// if first time through lowest count = total count for the word
+				
+				if (tempstr == NULL){
+				updateLowestCount();
+				}
+				else{
+					lowestcount = totalcount;
+				}
+
+				
+				// build string 
 				strcat(tempstr, tempword);
-				//printf("tempstr: %s\n", tempstr);
-				word = strtok(NULL, " \t");
-				printf("word within string: %s\n", word);
-				printf("str: %s\n", str); 
-				//				str = (char*)realloc(str, 30*sizeof(char));
-				//reset
-			 
-				isalpha = false;
-				islength = false;
-				loop = true;
+				strcat(tempstr, ": ");
+				
+				// convert count to str type and concact to tempstr
+				char countstr[2];
+				sprintf(countstr, "%d", totalcount);
+				strcat(tempstr, countstr);
+				strcat(tempstr, " ");
+				
+				//reset counts
+				totalcount = 0;
+				
+				
+
 			}
-			else{
-				//free(str);
-			}
+			// get next word
+			word = strtok(NULL, " \t");
+			printf("word within string: %s\n", word);
+			printf("str: %s\n", str); 
+			
+			//reset checks
+			isalpha = false;
+			islength = false;
+			loop = true;
 		}
-			// continue 
+		// now combine tempstr into str and put into str array
+		// this is when the program still needs to run but finished with one query 
 		if (!isalpha && !islength && loop){
+			char lcountstr[2];
+			sprintf(lcountstr, "%d", lowestcount);
+			strcat(tempstr, "- ");
+			strcat(tempstr, lcountstr);
+
+			// put str into strarr at position i
 			strcpy(str, tempstr);
 			strarr[i]=str;
-		  printf("str in array: %s\n", str);
-			
-			printarrstr(strarr); 
+			printf("%s\n", str);
+
+			//reset lowest count
+			lowestcount = 0;
+
+			// move i up 1 for string array position update  
 			i++;
+						 
+						 
 			
-			//free(word);
 		}
-		//stop
+		
+		//this is when eof is called 
 		else{
 			printarrstr(strarr);
-			printf("freeing str: %s and its address: %p\n", str, str);
-			printf("address of str: %p; and address of word left: %p\n", str, word);
+			//printf("freeing str: %s and its address: %p\n", str, str);
+			//printf("address of str: %p; and address of word left: %p\n", str, word);
 			//word = NULL;
-			printf("word left after str in array: %s and its address: %p\n", word, word);
+			//printf("word left after str in array: %s and its address: %p\n", word, word);
 			//free(word);
 			free(str);
 		}
 			
 	}
-	//free(word);
+
 	freestrarr(strarr);
+	happly(hash, delete_wordqueue);     
+	
+	hclose(hash);
 }
 		
 	

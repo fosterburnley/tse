@@ -96,7 +96,7 @@ hashtable_t* indexload(char *filename, char *dirname){
 	bool dempty=false; 
 	char tempword[MAXARRAY]="";
 	
-	sprintf(pathandfile, "../indexes/indexnm");
+	sprintf(pathandfile, "../%s/%s", dirname, filename);
 	FILE *fp;
 	fp = fopen(pathandfile, "r");
 	printf("file at %s\n", pathandfile);
@@ -177,7 +177,7 @@ hashtable_t* indexload(char *filename, char *dirname){
 			//wempty=true;
 			//}
 	}
-	
+	printf("loading index at %s\n", pathandfile);
 	fclose(fp);
 	//	hclose(hword);
 	return hword;
