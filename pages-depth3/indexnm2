@@ -1,14 +1,15 @@
 used 2 1 
+use 1 1 
 search 1 1 
 resources 1 1 2 1 
 program 1 1 
 engine 1 1 
 modules 2 1 
 stephen 1 1 2 1 
-are 1 1 
+are 1 2 
 testing 1 1 
-course 1 1 2 1 
-this 1 1 2 3 
+course 1 5 2 1 
+this 1 4 2 3 
 data 2 1 
 refer 2 1 
 let 1 1 
@@ -19,10 +20,10 @@ taylor 1 1 2 1
 palmer 1 1 2 1 
 last 1 1 2 1 
 own 1 1 
-for 1 1 2 1 
+for 1 2 2 1 
 assignments 1 1 2 2 
 reliable 1 1 
-programming 1 1 
+programming 1 2 
 weeks 1 1 
 crawler 2 1 
 balkcom 1 1 2 1 
@@ -34,15 +35,15 @@ finally 1 1
 maintainable 1 1 
 professors 1 1 2 1 
 join 1 1 
-design 1 1 
+design 1 4 
 designed 1 1 2 1 
 management 1 1 
-and 1 1 2 2 
+and 1 7 2 2 
 development 1 1 
-the 1 1 2 2 
+the 1 5 2 2 
 few 1 1 
 document 1 1 
-with 1 1 
+with 1 2 
 bash 2 1 
 process 1 1 
 please 1 1 2 2 
@@ -50,23 +51,23 @@ legacy 2 1
 crash 1 1 
 how 1 1 
 labs 1 1 2 3 
-will 1 1 
-your 1 1 
-coding 1 1 2 1 
+will 1 2 
+your 1 2 
+coding 1 3 2 1 
 deeply 1 1 2 1 
 these 1 1 2 1 
 understandable 1 1 
 guide 1 1 
-overview 1 1 
+overview 1 2 
 indebted 1 1 2 1 
 that 1 1 
-engs 1 1 2 2 
+engs 1 3 2 2 
 objectives 1 1 
 structures 2 1 
 other 1 1 
 amp 1 1 
 zhou 1 1 2 1 
-you 1 1 
+you 1 4 
 click 2 1 
 page 1 1 2 2 
 reading 1 1 2 1 
@@ -74,7 +75,7 @@ tSE 2 3
 principles 1 1 
 indexer 2 1 
 updated 1 1 2 1 
-style 1 1 2 1 
+style 1 2 2 1 
 version 1 1 2 1 
 canvas 2 1 
 source 1 1 
@@ -82,15 +83,15 @@ view 2 1
 good 1 1 
 all 1 1 
 lab 2 6 
-team 1 1 
+team 1 2 
 campbell 1 1 2 1 
-learn 1 1 
-unix 1 1 
+learn 1 3 
+unix 1 3 
 code 1 1 
-large 1 1 
+large 1 2 
 tools 1 1 
 project 1 1 
-build 1 1 
+build 1 2 
 notes 1 1 2 1 
 college 1 1 2 1 
 kotz 1 1 2 1 
@@ -99,7 +100,7 @@ was 1 1 2 1
 examples 1 1 2 1 
 break 1 1 
 systems 1 1 
-software 1 1 
+software 1 3 
 students 1 1 
 those 1 1 2 1 
 outstanding 1 1 2 1 

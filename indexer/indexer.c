@@ -189,7 +189,7 @@ int main(int argc, char *argv[]){
 	//	while(i !=83){
 		//		webpage_t* webpage;
 	//webpage = pageload(i, "pages-depth3");
-	while(((webpage = pageload(i, pagedir))!=NULL && i <3)){  
+	while(((webpage = pageload(i, pagedir))!=NULL && i <2)){  
 		//	while(((webpage = pageload(i, pagedir))!=NULL)){
 		//webpage = pageload(i, "pages-depth3");	
 		printf("page loaded id: %d\n", i);
