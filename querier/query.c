@@ -92,8 +92,14 @@ int main(){
 	char newline;
 	bool isalpha = false;
 	bool islength = false;
-	word = (char*) malloc(MAXCHAR * sizeof(char));
-	//	strarr = (char*) malloc(((MAXSTRINGS * MAXCHAR) * sizeof(char))); 
+	//word = (char*) malloc(MAXCHAR * sizeof(char));
+	//	strarr = (char*) malloc(((MAXSTRINGS * MAXCHAR) * sizeof(char)));
+
+	for (int i = 0; i < MAXSTRINGS; i++)
+		{
+			strarr[i]=NULL;
+		}
+	
 	while (loop){
 		printf(">");
 		str = (char*) malloc(MAXSTRINGS * sizeof(char));    
@@ -109,7 +115,7 @@ int main(){
 			if (checkEnd(word)==true){
 				printf("program terminated\n");
 				loop=false;
-				//		free(word);
+				//	free(word);
 				//printarrstr(strarr);
 				break;
 			}
@@ -127,41 +133,58 @@ int main(){
 			}
 			if (!isalpha || !islength || loop){
 				normalizeWord(word);
-				printf("tempstr: %s\n", tempstr);
+				//	printf("tempstr: %s\n", tempstr);
 				strcpy(tempword, word);
 				strcat(tempword, " ");
-				printf("tempword: %s\n", tempword);
+				//printf("tempword: %s\n", tempword);
 				strcat(tempstr, tempword);
-				printf("tempstr: %s\n", tempstr);
-				word = strtok(NULL, " ");
+				//printf("tempstr: %s\n", tempstr);
+				word = strtok(NULL, " \t");
 				printf("word within string: %s\n", word);
+				printf("str: %s\n", str); 
 				//				str = (char*)realloc(str, 30*sizeof(char));
-				//reset 
+				//reset
+			 
 				isalpha = false;
 				islength = false;
 				loop = true;
 			}
+			else{
+				//free(str);
+			}
 		}
-		// continue 
+			// continue 
 		if (!isalpha && !islength && loop){
 			strcpy(str, tempstr);
 			strarr[i]=str;
+		  printf("str in array: %s\n", str);
+			
 			printarrstr(strarr); 
 			i++;
+			
 			//free(word);
 		}
 		//stop
 		else{
 			printarrstr(strarr);
-			free(word);
-			//free(str);
+			printf("freeing str: %s and its address: %p\n", str, str);
+			printf("address of str: %p; and address of word left: %p\n", str, word);
+			//word = NULL;
+			printf("word left after str in array: %s and its address: %p\n", word, word);
+			//free(word);
+			free(str);
 		}
-		
+			
 	}
 	//free(word);
 	freestrarr(strarr);
-	
 }
+		
+	
+	//free(word);
+
+	
+	
 		// while there are more words in string
 		/*
 		while (word !=NULL){
