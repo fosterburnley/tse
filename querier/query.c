@@ -263,7 +263,7 @@ void findWordandCount(hashtable_i* hash, char *word, int id){
  *
  */
 void updateLowestCount(){
-	printf("total count: %d vs lowest count %d\n", totalcount, lowestcount);
+	//	printf("total count: %d vs lowest count %d\n", totalcount, lowestcount);
 	if (totalcount < lowestcount){
 		lowestcount = totalcount;
 		//printf("lowestcount %d and total count %d\n", lowestcount, totalcount);	 
@@ -359,6 +359,9 @@ int main(){
 	//	initstrarr(strarr);  
 	// while user does not enter eof 
 	while (loop){
+
+		// to indicate whether there was at least one document with rank above 0 
+		bool hasresult = false;
 		//open new queue every time
 		qrankid = qopen();
 		char *strarr[MAXSTRINGS];
@@ -488,34 +491,42 @@ int main(){
 				
 				//print rankid
 				printrankid((void*)rankid);
-				qput(qrankid, rankid);
+				if (rankid->rank !=0){
+					qput(qrankid, rankid);
+					hasresult = true;
+				}
+				else{
+					delete_rankid((void*)rankid);
+				}
 				
 				//reset lowest count 
 				lowestcount = 0;
 				
 				// move i up 1 for string array position update  
 				id++;
-			
 			}
-			printf("printing words query...\n");                                                                                                                                                                 
+
+			// if there were no ranks above 0 for query, print no results
+			// if there was, after every query processed, print out queue of ranks
+			if (hasresult == false){
+				printf("no results found\n");
+			}
+			else{
+				 printf("printing queue of rankids...\n");
+				 qapply(qrankid, printrankid);  
+			}
+			//	printf("printing words query...\n");                                                                                                                                                             
       printarrstr(strarr); 
 			free(str);
 
-			// after every query processed, print out queue of ranks and close
-			printf("printing queue of rankids...\n");                                                                                                                                                            
-      qapply(qrankid, printrankid);
+			// reset queue
 			qapply(qrankid, delete_rankid);                                                                                                                                                                      
 			qclose(qrankid); 
-			//	resetstrarr(strarr);
-			// reset queue
-			//qapply(qrankid, delete_rankid);
 		}
 		
 		//this is when eof is called
 		// free usused eof string
 		else{
-			//	printf("printing queue of rankids...\n");
-			//qapply(qrankid, printrankid);
 			free(str);
 			
 		}
