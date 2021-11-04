@@ -379,7 +379,10 @@ int main(){
 		qrankid = qopen();
 		char *strarr[MAXSTRINGS];
 		initstrarr(strarr);   
-		int i = 0;	
+		int i = 0;
+		int k = 0;
+		int orIndex[10] = {0};
+
 		printf(">");
 		str = (char*) malloc(MAXSTRINGS * sizeof(char));
 		
@@ -410,11 +413,11 @@ int main(){
 				//free(word);
 				isalpha = true; 
 			}
-			if (checkLength(word)){
-				printf("invalid query because string less than 3 characters\n");
+			//if (checkLength(word)){
+			//	printf("invalid query because string less than 3 characters\n");
 				//free(word);
-				islength = true;
-			}
+			//	islength = true;
+			//}
 			
 			normalizeWord(word);
 
@@ -441,6 +444,14 @@ int main(){
 				//update strarr position for next word
 				i++;
 			}
+			else{
+			  if (strcmp(word, "or") == 0){
+			    orIndex[k] = i;
+			    strarr[i] = word;
+			    k++;
+			    i++;
+			  }
+			}
 			// get next word
 			word = strtok(NULL, " \t");
 			printf("word within string: %s\n", word);
@@ -455,69 +466,91 @@ int main(){
 			printarrstr(strarr);
 			//free(str);
 		}
-
-		// after going through one string
-		// go through words in str arr and update ranks
+		
+		int numOr = 0;
+		int lowest_blockcount = 0;
+		int max = 0;
+		for (int l = 0; l < 10; l++){
+		  if (orIndex[l] != 0){
+		    numOr++;
+		  }
+		}
 		
 		if (!isalpha && !islength && loop){
-			
-			int id = 1;	
+		      
+		  int id = 1;	
 			// put in ranking
 			// for all documents 
-			while(id < 82){
+		      while(id < 82){
 				
 				//posiiton of strarr to get word
-				int j = 0;
+			int j = 0;
 				// for each word in query
-				while (strarr[j] != NULL){
-					// find count for word at id i
-					findWordandCount(hash, strarr[j], id);                                                                                                                                                      
+			if (numOr == 0){
+			  max = 1;
+			}
+			else max = numOr;
+			
+			for (int m = 0; m < max; m++){
+			  //while (strarr[j] != NULL){
+		       
+			  while ((orIndex[m] != 0 && j < orIndex[m]) || (orIndex[m] == 0 && strarr[j] != NULL)){
+			  // find count for word at id i
+			    findWordandCount(hash, strarr[j], id);                                                                                                                                                      
 					//printf("totalcount for word %s at id %d: %d\n", strarr[j], id, totalcount);                                                                                                                            
 					// update count for the specific word if not first time through                                                                                                                   
 					// if first time through lowest count = total count for the word                                                                                                                   
-					if (j==0){                                                                                                                                                                    
-          lowestcount = totalcount;                                                                                                                                                          
-					}                                                                                                                                                                                 
-					else{                                                                                                                                                                              
-						updateLowestCount();                                                                                                                                                             
-					}                                                                                                                                                                                 
-					//	printf("lowest count after updating word %s: %d\n", strarr[j], lowestcount); 
-					j++;
-					//reset total count
-					totalcount = 0;
-				}
-				//reset count                                                                                                                                                                         
-				
-			
-				rankid_t* rankid = (rankid_t*)malloc(sizeof(rankid_t));
-				
-				// fill in rankid
-				rankid->rank = lowestcount;
-				rankid->id = id;
-				//printf("rankid rank: %d, id %d\n", rankid->rank, rankid->id);
+			    if (j==0){                                                                                                                                                                    
+			      lowestcount = totalcount;                                                                                                                                                          
+			    }                                                                                                                                                                                 
+			    else{                                                                                                                                                                              
+			      updateLowestCount();                                                                                                                                                             
+			    }                                                                                                                                                                                 
+			    //	printf("lowest count after updating word %s: %d\n", strarr[j], lowestcount); 
+			    j++;
+			    //reset total count
+			    totalcount = 0;
+			  }
+			  //reset count                                                                                                                                                                         
+			  if (m == 0){
+			    lowest_blockcount=lowestcount;
+			  }else{
+			    if(lowestcount<lowest_blockcount){
+			      lowest_blockcount = lowestcount;
+			    }
+			  }
+			  
+			  rankid_t* rankid = (rankid_t*)malloc(sizeof(rankid_t));
+			  
+			  // fill in rankid
+			  rankid->rank = lowest_blockcount;
+			  rankid->id = id;
+			  //printf("rankid rank: %d, id %d\n", rankid->rank, rankid->id);
 				
 				// fill in url for rankid
-				char *url;
-				url = getURL(id);
-				rankid->url = url;
+			  char *url;
+			  url = getURL(id);
+			  rankid->url = url;
 				//printf("rankurl from id %d: %s\n", id, rankid->url);
 				
 				//print rankid
-				printrankid((void*)rankid);
-				if (rankid->rank !=0){
-					qput(qrankid, rankid);
-					hasresult = true;
-				}
-				else{
-					delete_rankid((void*)rankid);
-				}
-				
-				//reset lowest count 
-				lowestcount = 0;
-				
-				// move i up 1 for string array position update  
-				id++;
+			  printrankid((void*)rankid);
+			  if (rankid->rank !=0){
+			    qput(qrankid, rankid);
+			    hasresult = true;
+			  }
+			  else{
+			    delete_rankid((void*)rankid);
+			  }
+			  
+			  //reset lowest count 
+			  lowestcount = 0;
+			  
+			}		// move i up 1 for string array position update  
+			  id++;
+			  lowest_blockcount = 0;
 			}
+		      
 
 			// if there were no ranks above 0 for query, print no results
 			// if there was, after every query processed, print out queue of ranks
