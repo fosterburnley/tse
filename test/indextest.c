@@ -61,7 +61,7 @@ int main(){
 	
 	hashtable_i* hload;
 	//	hload = hopen(1000);
-	hload = indexload("indexnm1", "pages-depth3");
+	hload = indexload("indexnm82", "pages-depth3");
 	printf("printing hash after loaded by indexnm..\n");	
 	happly(hload, print_hash);
 	/*

@@ -349,7 +349,7 @@ int main(){
 
 	// load index into hash
 	hashtable_i* hash;
-	hash = indexload("indexnm2", "pages-depth3");
+	hash = indexload("indexnm82", "pages-depth3");
 	happly(hash, print_hash);
 	// open up queue of rankids
  

@@ -100,16 +100,14 @@ static bool dcsearchfn(void *element, const void *key){
 	}
 	
 }
-
+/*
 void print_doccount(void *doccount_v){
 	//printf("hello");
 	doccount_i* doccount= (doccount_i*)(doccount_v);
 	printf("id: %d, count: %d\n\n", doccount-> id, doccount->count); 
 
 }
-/*
- * print the word from wordcount struct 
-*/ 
+
 void print_hash(void *wqueue_v){
 	
   wqueue_i* wqueuehash = (wqueue_i*) wqueue_v;
@@ -119,7 +117,7 @@ void print_hash(void *wqueue_v){
  	qapply(wqueuehash->queue, print_doccount);
   //printf("count: %d\n", count_w->count);
 }
-
+*/
 /*
  * sum the counts in hash table
 */ 
@@ -189,7 +187,7 @@ int main(int argc, char *argv[]){
 	//	while(i !=83){
 		//		webpage_t* webpage;
 	//webpage = pageload(i, "pages-depth3");
-	while(((webpage = pageload(i, pagedir))!=NULL && i <2)){  
+	while(((webpage = pageload(i, pagedir))!=NULL)){  
 		//	while(((webpage = pageload(i, pagedir))!=NULL)){
 		//webpage = pageload(i, "pages-depth3");	
 		printf("page loaded id: %d\n", i);
