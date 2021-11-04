@@ -32,7 +32,25 @@ typedef struct wqueue{
 
 } wqueue_i;
 
-
+                                                                                                                                                                                                  
+void print_doccount(void *doccount_v){                                                                                                                                                           
+  //printf("hello");                                                                                                                                                                             
+  doccount_i* doccount= (doccount_i*)(doccount_v);                                                                                                                                               
+  printf("id: %d, count: %d\n\n", doccount-> id, doccount->count);                                                                                                                               
+                                                                                                                                                                                                 
+}                                                                                                                                                                                                
+/*                                                                                                                                                                                               
+ * print the word from wordcount struct                                                                                                                                                          
+*/                                                                                                                                                                                               
+void print_hash(void *wqueue_v){                                                                                                                                                                 
+                                                                                                                                                                                                 
+  wqueue_i* wqueuehash = (wqueue_i*) wqueue_v;                                                                                                                                                   
+                                                                                                                                                                                                 
+  printf("word in hash: %s\n", wqueuehash->word);                                                                                                                                                
+  //  print_doccount((void*)(wqueue->queue));                                                                                                                                                    
+  qapply(wqueuehash->queue, print_doccount);                                                                                                                                                     
+  //printf("count: %d\n", count_w->count);                                                                                                                                                       
+}        
 void getidCount(void* queue){
   int count; 
 	int id;  
@@ -177,6 +195,7 @@ hashtable_t* indexload(char *filename, char *dirname){
 			//wempty=true;
 			//}
 	}
+	//	print_hash(hword);
 	printf("loading index at %s\n", pathandfile);
 	fclose(fp);
 	//	hclose(hword);

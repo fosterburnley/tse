@@ -15,16 +15,16 @@
 #include "../utils/hash.c"
 
 
-
+/*
 void print_doccount(void *doccount_v){                                                                                                                                                      
   //printf("hello");                                                                                                                                                                        
   doccount_i* doccount= (doccount_i*)(doccount_v);                                                                                                                                          
   printf("id: %d, count: %d\n\n", doccount-> id, doccount->count);                                                                                                                          
                                                                                                                                                                                             
 }                                                                                                                                                                                           
-/*                                                                                                                                                                                          
- * print the word from wordcount struct                                                                                                                                                     
-*/                                                                                                                                                                                          
+
+
+
 void print_hash(void *wqueue_v){                                                                                                                                                            
                                                                                                                                                                                             
   wqueue_i* wqueuehash = (wqueue_i*) wqueue_v;                                                                                                                                              
@@ -35,15 +35,13 @@ void print_hash(void *wqueue_v){
   //printf("count: %d\n", count_w->count);                                                                                                                                                 
 }
 
-
-/*                                                                                                                                                                                           
- * int / int (only free struct)                                                                                                                                                              
- */                                                                                                                                                                                          
+*/
 void delete_keycount(void* doccount_v){                                                                                                                                                      
   doccount_i* doccount = (doccount_i*) doccount_v;                                                                                                                                           
                                                                                                                                                                                              
   free(doccount);                                                                                                                                                                            
-}                                                                                                                                                                                            
+}
+
 /*                                                                                                                                                                                           
 * free all the blocks in a word count struct                                                                                                                                                 
 * free word                                                                                                                                                                                  
@@ -64,8 +62,7 @@ int main(){
 	hashtable_i* hload;
 	//	hload = hopen(1000);
 	hload = indexload("indexnm1", "pages-depth3");
-	printf("printing hash after loaded by indexnm..\n");
-	
+	printf("printing hash after loaded by indexnm..\n");	
 	happly(hload, print_hash);
 	/*
 	indexsave(hload, "indexnm1", "indexes");

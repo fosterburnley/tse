@@ -23,7 +23,7 @@
 
 int totalcount = 0;
 int lowestcount = 0;
-int id = 0;
+//int id = 0;
 
 
 typedef struct rankIDstruct{
@@ -32,6 +32,8 @@ typedef struct rankIDstruct{
 	char *url;
 
 }rankid_t;
+
+
 
 void printrankid(void* rankid_v){
 	rankid_t* rankid = (rankid_t*) rankid_v;
@@ -44,16 +46,35 @@ void printrankid(void* rankid_v){
 }
 
 
+
 /*
  *
  */
 void printarrstr(char *strarr[]){
 	for (int i=0; strarr[i] != NULL; i++){
-		printf("string in element %d is: %s\n", i, strarr[i]);
+		printf("word in element %d is: %s\n", i, strarr[i]);
 	}
 
 }
+/*
 
+void print_doccount(void *doccount_v){                                                                                                                                                           
+  //printf("hello");                                                                                                                                                                             
+  doccount_i* doccount= (doccount_i*)(doccount_v);                                                                                                                                               
+  printf("id: %d, count: %d\n\n", doccount-> id, doccount->count);                                                                                                                               
+                                                                                                                                                                                                 
+}                                                                                                                                                                                                
+
+void print_hash(void *wqueue_v){                                                                                                                                                                 
+                                                                                                                                                                                                 
+  wqueue_i* wqueuehash = (wqueue_i*) wqueue_v;                                                                                                                                                   
+                                                                                                                                                                                                
+  printf("word in hash: %s\n", wqueuehash->word);                                                                                                                                                
+  //  print_doccount((void*)(wqueue->queue));                                                                                                                                                    
+  qapply(wqueuehash->queue, print_doccount);                                                                                                                                                     
+  //printf("count: %d\n", count_w->count);                                                                                                                                                       
+}
+*/
 
 /*                                                                                                                                                               
  * int / int (only free struct)                                                                                                                                  
@@ -168,7 +189,7 @@ bool checkAndOr(char *word){
 
 /*
  *
- */
+
 void getCountID(void* doccount_v){
 	doccount_i* doccount = (doccount_i*) doccount_v;
 	
@@ -176,6 +197,7 @@ void getCountID(void* doccount_v){
 	id = doccount->id;
 
 }
+*/
 
 /*
  *
@@ -199,15 +221,37 @@ static bool wqsearchfn(void* element, const void *key){
   }                                                                                                                                                                                                                                                                                                           
 }            
 
+static bool searchid (void*element, const void *key){
+	doccount_i* doccount = (doccount_i*) element;
+	int* id = (int*)key;
+	if (doccount->id != *id){
+		return false;
+	}
+	else{
+		return true;
+	}
+
+	
+}
 /*
  *
  */
-void findWordandCount(hashtable_t* hash, char *word){
+void findWordandCount(hashtable_i* hash, char *word, int id){
 	
-  wqueue_i* found = (wqueue_i*) hsearch(hash, wqsearchfn, word, strlen(word));
+  wqueue_i* found = (wqueue_i*) hsearch(hash, wqsearchfn, (void*)word, strlen(word));
 	if (found !=NULL){
-		qapply(found->queue, getCountID);
+
+		// if word is found in hash, update total count for specific docid
+		doccount_i* founddoc = (doccount_i*) qsearch(found->queue, searchid, (void*)&id);
+		if (founddoc!=NULL){
+			totalcount = founddoc->count + totalcount;
+		}
+		// if word is not in doc 
+		else{
+			totalcount = 0;
+		}
 	}
+	// if word is not found in hash 
 	else{
 		return;
 	}
@@ -233,7 +277,7 @@ void updateLowestCount(){
 * extract url from saved page in pages-depth3
 * return url
 */
-char* getURL(){
+char* getURL(int id){
 	FILE *fp;
 	char pathandfile[MAXCHAR];
 	char *url = (char*) malloc(MAXSTRINGS*sizeof(char));
@@ -259,10 +303,34 @@ void initstrarr(char *strarr[]){
 	}
 }
 
+
+void resetstrarr(char *strarr[]){
+
+	int i = 0;
+	while(strarr[i] != NULL){
+		memset(strarr[i], '\0', MAXSTRINGS*sizeof(char));
+		i++;
+	}
+
+
+}
+void printdocrank(char *tempstr, char *str, int lowestcount){
+
+	 char lcountstr[2];                                                                                                                                                                                    
+	 sprintf(lcountstr, "%d", lowestcount);                                                                                                                                                               
+	 strcat(tempstr, "- ");                                                                                                                                                                               
+	 strcat(tempstr, lcountstr);                                                                                                                                                                          
+	 // put str into strarr at position i                                                                                                                                                                 
+	 strcpy(str, tempstr);                                                                                                                                                                                
+	 printf("each doc string %s\n", str); 
+	 memset(tempstr, '\0', sizeof(tempstr)); 
+}
+
+
 int main(){
 
 	//position in string array 
-	int i = 0;
+	
 
 	// structures to handle strings 
 	char *strarr[MAXSTRINGS];
@@ -276,41 +344,40 @@ int main(){
 	bool loop = true;
 	bool isalpha = false;
 	bool islength = false;
-	bool firstword = true;
+	//	bool firstword = true;
 	char result[MAXSTRINGS];
 
 	// load index into hash
-	hashtable_t* hash;
+	hashtable_i* hash;
 	hash = indexload("indexnm1", "pages-depth3");
-
+	happly(hash, print_hash);
 	// open up queue of rankids
+ 
 	queue_t* qrankid;
 	qrankid = qopen();
-
-	
-	//initialize string array
-	initstrarr(strarr);
-	
-	
-
+	//initialize string array                                                                                                                                                                
+	initstrarr(strarr);  
 	// while user does not enter eof 
 	while (loop){
+		
+		int i = 0;	
 		printf(">");
 		str = (char*) malloc(MAXSTRINGS * sizeof(char));
-
+		
 		//scan entire string 
 		scanf("%[^\n]%c", str, &newline);
 		
 		printf("str: %s\n", str);
-		memset(tempstr, '\0', sizeof(tempstr));
-
+		memset(tempstr, '\0', sizeof(MAXSTRINGS*sizeof(char)));
+		
 		//get first word of string 
 		word = strtok(str, " \t");
 		printf("word within string: %s\n", word);
-		firstword = true;
+		//firstword = true;
 		
 		while (word != NULL){
-			
+			//resetstrarr(strarr);
+			//freestrarr(strarr);
 			//check conditions
 			if (checkEnd(word)==true){
 				printf("program terminated\n");
@@ -335,23 +402,10 @@ int main(){
 			//exclude and, or, non alphabets, short words 
 			// if all conditions are good, put counts with each word 
 			if (!checkAndOr(word) && !isalpha && !islength){
+				//store each word in strarr
+				strarr[i] = word;
 				strcpy(tempword, word);
 				strcat(tempword, " ");
-
-				// update totalcount for each word
-				findWordandCount(hash, word);
-				printf("totalcount for word %s: %d\n", word, totalcount);
-				
-				// update count for the specific word if not first time through
-				// if first time through lowest count = total count for the word
-				if (firstword){
-					lowestcount = totalcount;
-				}
-				else{
-				updateLowestCount();
-				}
-				printf("lowest count after updating word %s: %d\n", word, lowestcount); 
-
 				
 				// build string 
 				strcat(tempstr, tempword);
@@ -364,9 +418,9 @@ int main(){
 				strcat(tempstr, " ");
 				
 				//reset count
-				totalcount = 0;
 				
-
+				//update strarr position for next word
+				i++;
 			}
 			// get next word
 			word = strtok(NULL, " \t");
@@ -376,69 +430,92 @@ int main(){
 			isalpha = false;
 			islength = false;
 			loop = true;
-			firstword= false;
-			//updateLowestCount();  
+			//			firstword= false;
+			//updateLowestCount();
+			printf("printing words in str arr: query...\n");
+			printarrstr(strarr);
+			//free(str);
 		}
 
 		// after going through one string
-		// now combine tempstr into str and put into str array
-		// this is when the program still needs to run but finished with one query 
-		if (!isalpha && !islength && loop){
+		// go through words in str arr and update ranks
 		
+		if (!isalpha && !islength && loop){
+			
+			int id = 1;	
+			// put in ranking
+			// for all documents 
+			while(id < 82){
 				
-			// put in ranking 
-			char lcountstr[2];
-			sprintf(lcountstr, "%d", lowestcount);
-			strcat(tempstr, "- ");
-			strcat(tempstr, lcountstr);
-			// put str into strarr at position i
-			strcpy(str, tempstr);
-			strarr[i]=str;
-			printf("each doc string %s\n", str);
+				//posiiton of strarr to get word
+				int j = 0;
+				// for each word in query
+				while (strarr[j] != NULL){
+					// find count for word at id i
+					findWordandCount(hash, strarr[j], id);                                                                                                                                                      
+					printf("totalcount for word %s at id %d: %d\n", strarr[j], id, totalcount);                                                                                                                            
+					// update count for the specific word if not first time through                                                                                                                   
+					// if first time through lowest count = total count for the word                                                                                                                   
+					if (j==0){                                                                                                                                                                    
+          lowestcount = totalcount;                                                                                                                                                          
+					}                                                                                                                                                                                 
+					else{                                                                                                                                                                              
+						updateLowestCount();                                                                                                                                                             
+					}                                                                                                                                                                                 
+					printf("lowest count after updating word %s: %d\n", strarr[j], lowestcount); 
+					j++;
+					//reset total count
+					totalcount = 0;
+				}
+				//reset count                                                                                                                                                                         
+				
 			
-			rankid_t* rankid = (rankid_t*)malloc(sizeof(rankid_t));
+				rankid_t* rankid = (rankid_t*)malloc(sizeof(rankid_t));
+				
+				// fill in rankid
+				rankid->rank = lowestcount;
+				rankid->id = id;
+				//printf("rankid rank: %d, id %d\n", rankid->rank, rankid->id);
+				
+				// fill in url for rankid
+				char *url;
+				url = getURL(id);
+				rankid->url = url;
+				//printf("rankurl from id %d: %s\n", id, rankid->url);
+				
+				//print rankid
+				printrankid((void*)rankid);
+				qput(qrankid, rankid);
+				
+				//reset lowest count 
+				lowestcount = 0;
+				
+				// move i up 1 for string array position update  
+				id++;
 			
-			// fill in rankid
-			rankid->rank = lowestcount;
-			rankid->id = id;
-			//printf("rankid rank: %d, id %d\n", rankid->rank, rankid->id);
-			
-			// fill in url for rankid
-			char *url;
-			url = getURL();
-			
-			rankid->url = url;
-			
-			//printf("rankurl from id %d: %s\n", id, rankid->url);
-			
-			//print rankid
-			printrankid((void*)rankid);
-			qput(qrankid, rankid);
-			//reset lowest count 
-			lowestcount = 0;
-			
-			// move i up 1 for string array position update  
-			i++;			 
-			
+			}
+			printf("printing words query...\n");                                                                                                                                                                 
+      printarrstr(strarr); 
+			free(str);
 		}
 		
 		//this is when eof is called
 		// free usused eof string
 		else{
-			printf("printing strarr...\n");
-			printarrstr(strarr);
+			
 			printf("printing queue of rankids...\n");
 			qapply(qrankid, printrankid);
 			free(str);
-		}
 			
+		}
 	}
-
+	
 	// free hash and string array and queue of rankids
 	qapply(qrankid, delete_rankid);
 	qclose(qrankid);
-	freestrarr(strarr);
+	//freestrarr(strarr);
 	happly(hash, delete_wordqueue);    
 	hclose(hash);
+	
 }
 		
