@@ -468,13 +468,16 @@ int main(){
 		}
 		
 		int numOr = 0;
-		int lowest_blockcount = 0;
+		int blockcount = 0;
+		int start_newblock = 1;
 		int max = 0;
+		int blocknum = 0;
 		for (int l = 0; l < 10; l++){
 		  if (orIndex[l] != 0){
 		    numOr++;
 		  }
 		}
+		printf("numOr = %d\n", numOr);
 		
 		if (!isalpha && !islength && loop){
 		      
@@ -487,21 +490,26 @@ int main(){
 			int j = 0;
 				// for each word in query
 			if (numOr == 0){
-			  max = 1;
+			  max = 0;
 			}
 			else max = numOr;
-			
-			for (int m = 0; m < max; m++){
+			blocknum=0;
+			//printf("just before for loop, max = %d\n", max);
+			for (int m = 0; m <= max; m++){
 			  //while (strarr[j] != NULL){
-		       
+				//printf("just inside for loop, m = %d\n", m);
+		    start_newblock = 1;
+				blocknum = blocknum+1;
 			  while ((orIndex[m] != 0 && j < orIndex[m]) || (orIndex[m] == 0 && strarr[j] != NULL)){
 			  // find count for word at id i
-			    findWordandCount(hash, strarr[j], id);                                                                                                                                                      
+					//printf("in while loop, looking for word = %s\n", strarr[j]);
+					findWordandCount(hash, strarr[j], id);                                                                                                                                                      
 					//printf("totalcount for word %s at id %d: %d\n", strarr[j], id, totalcount);                                                                                                                            
 					// update count for the specific word if not first time through                                                                                                                   
 					// if first time through lowest count = total count for the word                                                                                                                   
-			    if (j==0){                                                                                                                                                                    
-			      lowestcount = totalcount;                                                                                                                                                          
+			    if (start_newblock == 1){                                                                                                                                                                    
+			      lowestcount = totalcount;
+						start_newblock = 0;
 			    }                                                                                                                                                                                 
 			    else{                                                                                                                                                                              
 			      updateLowestCount();                                                                                                                                                             
@@ -511,19 +519,19 @@ int main(){
 			    //reset total count
 			    totalcount = 0;
 			  }
+				j++;
 			  //reset count                                                                                                                                                                         
-			  if (m == 0){
-			    lowest_blockcount=lowestcount;
+			  if (blocknum == 1){
+			    blockcount=lowestcount;
 			  }else{
-			    if(lowestcount<lowest_blockcount){
-			      lowest_blockcount = lowestcount;
-			    }
+			     blockcount = blockcount+lowestcount;
 			  }
-			  
-			  rankid_t* rankid = (rankid_t*)malloc(sizeof(rankid_t));
+				// printf("blocknumber = %d and blockcount = %d and lowestcount = %d\n", blocknum, blockcount, lowestcount);
+			}
+				rankid_t* rankid = (rankid_t*)malloc(sizeof(rankid_t));
 			  
 			  // fill in rankid
-			  rankid->rank = lowest_blockcount;
+			  rankid->rank = blockcount;
 			  rankid->id = id;
 			  //printf("rankid rank: %d, id %d\n", rankid->rank, rankid->id);
 				
@@ -546,10 +554,10 @@ int main(){
 			  //reset lowest count 
 			  lowestcount = 0;
 			  
-			}		// move i up 1 for string array position update  
+					// move i up 1 for string array position update  
 			  id++;
-			  lowest_blockcount = 0;
-			}
+		 
+					}
 		      
 
 			// if there were no ranks above 0 for query, print no results
