@@ -266,7 +266,7 @@ void updateLowestCount(){
 	printf("total count: %d vs lowest count %d\n", totalcount, lowestcount);
 	if (totalcount < lowestcount){
 		lowestcount = totalcount;
-			printf("lowestcount %d and total count %d\n", lowestcount, totalcount);	 
+		//printf("lowestcount %d and total count %d\n", lowestcount, totalcount);	 
 	}
 	else{
 		return;
@@ -307,7 +307,7 @@ void initstrarr(char *strarr[]){
 void resetstrarr(char *strarr[]){
 
 	int i = 0;
-	while(strarr[i] != NULL){
+	while(strarr[i]!=NULL){
 		memset(strarr[i], '\0', MAXSTRINGS*sizeof(char));
 		i++;
 	}
@@ -333,7 +333,7 @@ int main(){
 	
 
 	// structures to handle strings 
-	char *strarr[MAXSTRINGS];
+	//char *strarr[MAXSTRINGS];
 	char tempstr[MAXCHAR];
 	char tempword[MAXCHAR];
 	char *word;
@@ -349,17 +349,20 @@ int main(){
 
 	// load index into hash
 	hashtable_i* hash;
-	hash = indexload("indexnm1", "pages-depth3");
+	hash = indexload("indexnm2", "pages-depth3");
 	happly(hash, print_hash);
 	// open up queue of rankids
  
 	queue_t* qrankid;
-	qrankid = qopen();
+	
 	//initialize string array                                                                                                                                                                
-	initstrarr(strarr);  
+	//	initstrarr(strarr);  
 	// while user does not enter eof 
 	while (loop){
-		
+		//open new queue every time
+		qrankid = qopen();
+		char *strarr[MAXSTRINGS];
+		initstrarr(strarr);   
 		int i = 0;	
 		printf(">");
 		str = (char*) malloc(MAXSTRINGS * sizeof(char));
@@ -453,7 +456,7 @@ int main(){
 				while (strarr[j] != NULL){
 					// find count for word at id i
 					findWordandCount(hash, strarr[j], id);                                                                                                                                                      
-					printf("totalcount for word %s at id %d: %d\n", strarr[j], id, totalcount);                                                                                                                            
+					//printf("totalcount for word %s at id %d: %d\n", strarr[j], id, totalcount);                                                                                                                            
 					// update count for the specific word if not first time through                                                                                                                   
 					// if first time through lowest count = total count for the word                                                                                                                   
 					if (j==0){                                                                                                                                                                    
@@ -462,7 +465,7 @@ int main(){
 					else{                                                                                                                                                                              
 						updateLowestCount();                                                                                                                                                             
 					}                                                                                                                                                                                 
-					printf("lowest count after updating word %s: %d\n", strarr[j], lowestcount); 
+					//	printf("lowest count after updating word %s: %d\n", strarr[j], lowestcount); 
 					j++;
 					//reset total count
 					totalcount = 0;
@@ -497,21 +500,29 @@ int main(){
 			printf("printing words query...\n");                                                                                                                                                                 
       printarrstr(strarr); 
 			free(str);
+
+			// after every query processed, print out queue of ranks and close
+			printf("printing queue of rankids...\n");                                                                                                                                                            
+      qapply(qrankid, printrankid);
+			qapply(qrankid, delete_rankid);                                                                                                                                                                      
+			qclose(qrankid); 
+			//	resetstrarr(strarr);
+			// reset queue
+			//qapply(qrankid, delete_rankid);
 		}
 		
 		//this is when eof is called
 		// free usused eof string
 		else{
-			
-			printf("printing queue of rankids...\n");
-			qapply(qrankid, printrankid);
+			//	printf("printing queue of rankids...\n");
+			//qapply(qrankid, printrankid);
 			free(str);
 			
 		}
 	}
 	
 	// free hash and string array and queue of rankids
-	qapply(qrankid, delete_rankid);
+	//qapply(qrankid, delete_rankid);
 	qclose(qrankid);
 	//freestrarr(strarr);
 	happly(hash, delete_wordqueue);    
