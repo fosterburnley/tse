@@ -25,7 +25,9 @@ int totalcount = 0;
 int lowestcount = 0;
 //int id = 0;
 
-
+/*
+ * struct to carry the rank, id, and url 
+ */
 typedef struct rankIDstruct{
 	int rank;
 	int id;
@@ -34,6 +36,9 @@ typedef struct rankIDstruct{
 }rankid_t;
 
 
+/*
+ * print rankid struct 
+ */
 
 void printrankid(void* rankid_v){
 	rankid_t* rankid = (rankid_t*) rankid_v;
@@ -48,7 +53,7 @@ void printrankid(void* rankid_v){
 
 
 /*
- *
+ * print words in the string array from query 
  */
 void printarrstr(char *strarr[]){
 	for (int i=0; strarr[i] != NULL; i++){
@@ -86,7 +91,7 @@ void delete_keycount(void* doccount_v){
 }
 
 /*
- *
+ * delete word and queue in word queue strcut in hash
  */
 void delete_wordqueue(void *wqueue_v){                                                                                                                  
   wqueue_i* wqueuehash = (wqueue_i*) wqueue_v;                                                                                                            
@@ -98,7 +103,7 @@ void delete_wordqueue(void *wqueue_v){
 }
 
 /*
- *
+ * delete the rankid struct 
  */
 void delete_rankid(void *rankid_v){
 	rankid_t* rankid = (rankid_t*) rankid_v;
@@ -107,7 +112,7 @@ void delete_rankid(void *rankid_v){
 }
 
 /*
- *
+ * not used 
  */
 void freeword(char *str){
 	char* word; 
@@ -120,7 +125,7 @@ void freeword(char *str){
 }
 
 /*
- *
+ * free each word in the string array
  */
 void freestrarr(char *strarr[]){
 	for (int i = 0; strarr[i] !=NULL; i++){
@@ -132,7 +137,7 @@ void freestrarr(char *strarr[]){
 }
 
 /*
- *
+ * check if word = eof or EOF
  */
 bool checkEnd(char *word){
 
@@ -143,7 +148,7 @@ bool checkEnd(char *word){
 }
 
 /*
- *
+ * check for each word's length
  */
 bool checkLength(char *word){
 	if(strlen(word) < 3){
@@ -154,7 +159,7 @@ bool checkLength(char *word){
 }
 
 /*
- *
+ * check if each word is a actual word
  */
 bool checkAlpha(char *word){
 	for (int i = 0; i < strlen(word); i++){
@@ -167,7 +172,7 @@ bool checkAlpha(char *word){
 }
 
 /*
- *
+ * lowercase the words
  */
 int normalizeWord(char *word){
 
@@ -178,7 +183,7 @@ int normalizeWord(char *word){
 }
 
 /*
- *
+ * check for and /or words
  */
 bool checkAndOr(char *word){
 	if ((strcmp(word, "or")==0) || (strcmp(word, "and")==0)){
@@ -200,7 +205,7 @@ void getCountID(void* doccount_v){
 */
 
 /*
- *
+ * search function for hash for word 
  */
 static bool wqsearchfn(void* element, const void *key){                                                                                                  
   wqueue_i* count_w;                                                                                                                                     
@@ -221,6 +226,9 @@ static bool wqsearchfn(void* element, const void *key){
   }                                                                                                                                                                                                                                                                                                           
 }            
 
+/*
+ * search function for id in each queue of doccount structs
+ */
 static bool searchid (void*element, const void *key){
 	doccount_i* doccount = (doccount_i*) element;
 	int* id = (int*)key;
@@ -234,7 +242,7 @@ static bool searchid (void*element, const void *key){
 	
 }
 /*
- *
+ * find the word and update count for each id corresponding to the word 
  */
 void findWordandCount(hashtable_i* hash, char *word, int id){
 	
@@ -260,7 +268,7 @@ void findWordandCount(hashtable_i* hash, char *word, int id){
 }
 
 /*
- *
+ * update the lowest count when total count < lowest count
  */
 void updateLowestCount(){
 	//	printf("total count: %d vs lowest count %d\n", totalcount, lowestcount);
@@ -297,13 +305,18 @@ char* getURL(int id){
 
 }
 
+/*
+ * initialize the strarray
+ */
 void initstrarr(char *strarr[]){
 	for (int i = 0; i < MAXSTRINGS; i++){
 		strarr[i]=NULL; 
 	}
 }
 
-
+/*
+ * reset the string array
+ */
 void resetstrarr(char *strarr[]){
 
 	int i = 0;
@@ -314,6 +327,9 @@ void resetstrarr(char *strarr[]){
 
 
 }
+/*
+ * not used 
+ */
 void printdocrank(char *tempstr, char *str, int lowestcount){
 
 	 char lcountstr[2];                                                                                                                                                                                    
@@ -329,8 +345,6 @@ void printdocrank(char *tempstr, char *str, int lowestcount){
 
 int main(){
 
-	//position in string array 
-	
 
 	// structures to handle strings 
 	//char *strarr[MAXSTRINGS];
@@ -355,8 +369,7 @@ int main(){
  
 	queue_t* qrankid;
 	
-	//initialize string array                                                                                                                                                                
-	//	initstrarr(strarr);  
+
 	// while user does not enter eof 
 	while (loop){
 
@@ -527,8 +540,7 @@ int main(){
 		//this is when eof is called
 		// free usused eof string
 		else{
-			free(str);
-			
+			free(str);			
 		}
 	}
 	
