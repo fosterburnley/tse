@@ -505,7 +505,7 @@ int main(int argc, char *argv[]){
 		//get first word of string 
 		
 		//printf("word within string: %s\n", word);
-		word = strtok(str, " \t");
+		word = strtok(str, " ");
 		// if user types in empty string or no more input left in quiet mode 
 		if (strcmp(str, "\0") == 0){
 			//printstatement("empty string\n");                                                                                                          
@@ -569,10 +569,10 @@ int main(int argc, char *argv[]){
 			}
 			// check the length of the word (leave "or)
 			if (checkLength(word) && (checkOperator != 1)){
-				printstatement("invalid query because string less than 3 characters\n");
+				//				printstatement("invalid query because string less than 3 characters\n");
 				//free(word);
 				islength = true;
-				break;
+				
 			}
 
 			//exclude and,  non alphabets, short words 
@@ -602,7 +602,7 @@ int main(int argc, char *argv[]){
 				i++;
 			}
 			// get next word
-			word = strtok(NULL, " \t");
+			word = strtok(NULL, " ");
 			//printf("word within string: %s\n", word);
 
 			// check if last word is "and"/"or"
@@ -622,14 +622,16 @@ int main(int argc, char *argv[]){
 			//			firstword= false;
 			//updateLowestCount();
 			//printf("printing words in str arr: query...\n");
-			//printarrstr(strarr);
+			//			printarrstr(strarr);
 			//free(str);
 		}
 
 		// go through words in str arr and update rank only if the string is valid 
-		if (!isalpha && !islength && loop && !emptyString && !isUnvalidFirstWord && !isUnvalidLastWord && !adjacentOp){
+		if (!isalpha  && loop && !emptyString && !isUnvalidFirstWord && !isUnvalidLastWord && !adjacentOp){
 			bool wordAfterOr = true;
-			int id = 1;	
+			hasresult = false;
+			int id = 1;
+			//			printarrstr(strarr);  
 			// put in ranking
 			// for all documents 
 			while(id < 83){

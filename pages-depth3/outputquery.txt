@@ -16,8 +16,10 @@ str: as234
 invalid query because characters not in alphabet
 str: experiment and dew3
 invalid query because characters not in alphabet
-str: as or reside
-invalid query because string less than 3 characters
+str: as45 or reside
+invalid query because characters not in alphabet
+str: few and gi
+no results found
 str: experiment or def445
 invalid query because characters not in alphabet
 str: reside and !res
