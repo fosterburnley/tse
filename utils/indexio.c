@@ -117,12 +117,13 @@ hashtable_t* indexload(char *filename, char *dirname){
 	sprintf(pathandfile, "../%s/%s", dirname, filename);
 	FILE *fp;
 	fp = fopen(pathandfile, "r");
-	printf("file at %s\n", pathandfile);
+
 	
 	if (fp == NULL){
-		printf("warning: can't find file for index");
+		printf("warning: can't find file for index\n");
 		return NULL;
 	}
+	//		printf("file at %s\n", pathandfile);
 	//word = (char*) malloc(sizeof(char)); 
 	//fscanf(fp, "%s", word);
  	//strcpy(lword, wordArray);
@@ -136,7 +137,7 @@ hashtable_t* indexload(char *filename, char *dirname){
 
 	  memset(tempword, '0', sizeof(tempword)); 
 		fscanf(fp, "%s", tempword);
-		printf("tempword: %s\n", tempword);
+		//		printf("tempword: %s\n", tempword);
 		if(tempword[0]=='0'){
 			//printf("end of file: can't find word\n");
 			wempty=true;
@@ -144,7 +145,7 @@ hashtable_t* indexload(char *filename, char *dirname){
 		}
 		word = (char*)malloc(MAXWORD*(sizeof(char)));
 		strcpy(word, tempword);
-		printf("word: %s\n", word);	
+		//	printf("word: %s\n", word);	
 
 		
 	  wqhash= (wqueue_i*)malloc(sizeof(wqueue_i));

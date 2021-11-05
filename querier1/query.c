@@ -20,8 +20,8 @@
 
 #define MAXSTRINGS 100
 #define MAXCHAR 100
-
-int totalcount = 0;
+#define MAXINTS 50
+int totalwordcount = 0;
 int lowestcount = 0;
 //int id = 0;
 
@@ -51,7 +51,13 @@ void printrankid(void* rankid_v){
 }
 
 
+void printcountTracker(int countTracker[]){
 
+	for (int i = 0; i < MAXINTS; i++){
+		printf("count at position %d: %d\n", i, countTracker[i]);
+	}
+
+}
 /*
  * print words in the string array from query 
  */
@@ -184,12 +190,20 @@ int normalizeWord(char *word){
 
 /*
  * check for and /or words
+ * if "and", return -1
+ * if none, return 0
+ * if "or", return 1
  */
-bool checkAndOr(char *word){
-	if ((strcmp(word, "or")==0) || (strcmp(word, "and")==0)){
-		return true;
+int checkAndOr(char *word){
+	if ((strcmp(word, "or"))==0){
+		return 1;
 	}
-	return false; 
+	else if ((strcmp(word, "and"))==0){
+		return -1;
+	}
+	else{
+		return 0;
+	}
 }
 
 /*
@@ -252,11 +266,11 @@ void findWordandCount(hashtable_i* hash, char *word, int id){
 		// if word is found in hash, update total count for specific docid
 		doccount_i* founddoc = (doccount_i*) qsearch(found->queue, searchid, (void*)&id);
 		if (founddoc!=NULL){
-			totalcount = founddoc->count + totalcount;
+			totalwordcount = founddoc->count + totalwordcount;
 		}
 		// if word is not in doc 
 		else{
-			totalcount = 0;
+			totalwordcount = 0;
 		}
 	}
 	// if word is not found in hash 
@@ -272,8 +286,8 @@ void findWordandCount(hashtable_i* hash, char *word, int id){
  */
 void updateLowestCount(){
 	//	printf("total count: %d vs lowest count %d\n", totalcount, lowestcount);
-	if (totalcount < lowestcount){
-		lowestcount = totalcount;
+	if (totalwordcount < lowestcount){
+		lowestcount = totalwordcount;
 		//printf("lowestcount %d and total count %d\n", lowestcount, totalcount);	 
 	}
 	else{
@@ -314,6 +328,11 @@ void initstrarr(char *strarr[]){
 	}
 }
 
+void initcountTracker(int countTracker[]){
+	for (int i = 0; i < MAXINTS; i++){
+		countTracker[i] = -1;
+	}
+}
 /*
  * reset the string array
  */
@@ -343,9 +362,54 @@ void printdocrank(char *tempstr, char *str, int lowestcount){
 }
 
 
+//int main(int argc, char *argv[]){
 int main(){
+	/*
+	// load int variables filename and path name to read from 
+	char *filename = argv[2];                                                                                                                       
+  char *pagedir = argv[1];
 
+	bool quiet = false; 
+	// handle flag case 
+	char ipathandfile[MAXSTRINGS];
+	char opathandfile[MAXSTRINGS];
+	FILE *inputquery;
+	FILE *outputquery;
+	// if # of arguments is less than 4
+	if (argc < 3 || argc > 6){                                                                                                                       
+    printf("wrong number of arguments: usage error: <pagedir> <indexnm> [-q] < myqueries.txt > myoutput\n");                                                                 
+		exit(EXIT_FAILURE);                                                                                                                            
+  }
+	
 
+	// if number of arguments is 4 or greater and either flag doesn't equal to -q or there aren't 6 arguments
+	if (argc >=4){
+		char *flag = argv[3];
+		quiet = true;
+		printf("flag: %s\n", flag);
+		if ((strcmp(flag, "-q")!=0) || (argc != 6)){
+			printf("wrong flag use:usage error: <pagedir> <indexnm> [-q] < myqueries.txt > myoutput\n");
+			exit(EXIT_FAILURE);
+		}
+	// get output and input query files 
+		else{
+			char *inputfile = argv[4];
+			char *outputfile = argv[5];
+			sprintf(ipathandfile, "../%s/%s", pagedir, inputfile);
+			sprintf(opathandfile, "../%s/%s", pagedir, outputfile);
+			//ipathandfile = argv[5];
+			//opathandfile = argv[6];
+			printf("input query file at: %s\n", ipathandfile);
+			printf("output file at: %s\n", opathandfile);
+			inputquery = fopen(ipathandfile, "r");
+			outputquery = fopen(opathandfile, "w");
+			if (inputquery == NULL){
+				printf("input file cannot be found");
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+	*/
 	// structures to handle strings 
 	//char *strarr[MAXSTRINGS];
 	char tempstr[MAXCHAR];
@@ -353,79 +417,149 @@ int main(){
 	char *word;
 	char *str; 
 	char newline;
-
+ 
 	//checks
 	bool loop = true;
 	bool isalpha = false;
 	bool islength = false;
+	bool isUnvalidFirstWord = false;
+	bool lastwordOp = false; 
+	bool isUnvalidLastWord = false;
+	bool adjacentOp = false; 
 	//	bool firstword = true;
 	char result[MAXSTRINGS];
 
 	// load index into hash
+
 	hashtable_i* hash;
-	hash = indexload("indexnm2", "pages-depth3");
-	happly(hash, print_hash);
+	//hash = indexload(filename, pagedir);
+	hash = indexload("indexnm1", "pages-depth3");
+	if (hash == NULL){
+		exit(EXIT_FAILURE);
+	}
+	//happly(hash, print_hash);
 	// open up queue of rankids
  
 	queue_t* qrankid;
 	
-
-	// while user does not enter eof 
+	// char newline;                                                                                                                              
+	//  fscanf(inputquery, "%[^\n]%c", str, newline);                                                                                                
+	//   printf("str: %s\n", str);       
+	 //while user does not enter eof
+			
 	while (loop){
 
 		// to indicate whether there was at least one document with rank above 0 
 		bool hasresult = false;
+		bool emptyString = false;
+		bool isFirstWord = true;
+
 		//open new queue every time
 		qrankid = qopen();
 		char *strarr[MAXSTRINGS];
 		initstrarr(strarr);   
-		int i = 0;
-		int k = 0;
-		int orIndex[10] = {0};
+		int i = 0;	
 
-		printf(">");
-		str = (char*) malloc(MAXSTRINGS * sizeof(char));
-		
-		//scan entire string 
-		scanf("%[^\n]%c", str, &newline);
-		
+		str = (char*) calloc(1, MAXSTRINGS * sizeof(char));
+		scanf(" %[^\n]%c", str, &newline); 
+		/*
+		//scan entire string from user if not quiet and read from input file if quiet
+		if (!quiet){
+			printf(">");
+			scanf("%[^\n]%c", str, &newline);
+		}
+		else{
+			char newline[2];
+		  fscanf(inputquery, "%[^\n]%c", str, newline);
+			//	printf("str: %s\n", str);  
+		}
+		*/
 		printf("str: %s\n", str);
+		
 		memset(tempstr, '\0', sizeof(MAXSTRINGS*sizeof(char)));
 		
 		//get first word of string 
-		word = strtok(str, " \t");
-		printf("word within string: %s\n", word);
-		//firstword = true;
 		
-		while (word != NULL){
+		//printf("word within string: %s\n", word);
+		word = strtok(str, " ");
+		// if user types in empty string or no more input left in quiet mode 
+		if (strcmp(str, "\0") == 0){
+			printf("empty string\n");                                                                                                                   
+        emptyString = true;                                                                                                                        /* 
+			if (quiet){
+				printf("no more input in input file");
+				exit(EXIT_SUCCESS);
+			}
+			else{
+			
+				printf("empty string\n");
+				emptyString = true;
+				
+			}
+																																																																									 */
+		}
+		
+		// if string doesn't equal to NULL
+		while (word != NULL && !emptyString){
 			//resetstrarr(strarr);
 			//freestrarr(strarr);
 			//check conditions
-			if (checkEnd(word)==true){
+			normalizeWord(word);
+			int checkOperator = checkAndOr(word);
+			
+			//printf("checkoperator for word %s: %d\n", word, checkOperator);
+			// if first word is and /or
+			//break;
+			if (isFirstWord && (checkAndOr(word) !=0)){
+				printf("invalid query because first word is 'and' / 'or'\n");
+				isUnvalidFirstWord = true;
+				isFirstWord = false; 
+				break;
+			}
+			if ((checkAndOr(word) != 0) && lastwordOp){
+				printf("invalid query because adjacent 'and'/'or' combination\n");
+				adjacentOp = true;
+				break; 
+			}
+			// if the word is and / or
+			if (checkAndOr(word) != 0){
+				lastwordOp = true;
+			}
+			else {
+				lastwordOp = false; 
+			}
+			// check if the word is eof
+			if (checkEnd(word)==true)
+				{
 				printf("program terminated\n");
 				loop=false;
 				//	free(word);
 				//printarrstr(strarr);
 				break;
 			}
+			// check if word is actually a word 
 			if (checkAlpha(word)){
 				printf("invalid query because characters not in alphabet\n");
 				//free(word);
-				isalpha = true; 
+				isalpha = true;
+				break;
 			}
-			//if (checkLength(word)){
-			//	printf("invalid query because string less than 3 characters\n");
+			// check the length of the word (leave "or)
+			if (checkLength(word) && (checkOperator != 1)){
+				printf("invalid query because string less than 3 characters\n");
 				//free(word);
-			//	islength = true;
-			//}
-			
-			normalizeWord(word);
+				islength = true;
+				break;
+			}
 
-			//exclude and, or, non alphabets, short words 
+			//exclude and,  non alphabets, short words 
 			// if all conditions are good, put counts with each word 
-			if (!checkAndOr(word) && !isalpha && !islength){
+			if ((checkOperator != -1) && !isalpha && !islength && !isUnvalidFirstWord && !adjacentOp){
+				
 				//store each word in strarr
+				
 				strarr[i] = word;
+				/*
 				strcpy(tempword, word);
 				strcat(tempword, " ");
 				
@@ -435,130 +569,137 @@ int main(){
 				
 				// convert count to str type and concact to tempstr
 				char countstr[2];
-				sprintf(countstr, "%d", totalcount);
+				sprintf(countstr, "%d", totalwordcount);
 				strcat(tempstr, countstr);
 				strcat(tempstr, " ");
 				
 				//reset count
-				
+				*/
 				//update strarr position for next word
 				i++;
 			}
-			else{
-			  if (strcmp(word, "or") == 0){
-			    orIndex[k] = i;
-			    strarr[i] = word;
-			    k++;
-			    i++;
-			  }
-			}
 			// get next word
-			word = strtok(NULL, " \t");
-			printf("word within string: %s\n", word);
+			word = strtok(NULL, " ");
+			//printf("word within string: %s\n", word);
 
+			// check if last word is "and"/"or"
+			if (word == NULL && lastwordOp){
+				printf("invalid query because 'and' /'or' at the end of query\n");
+				isUnvalidLastWord = true;
+				break;
+			}
+			
 			//reset and update checks
 			isalpha = false;
 			islength = false;
 			loop = true;
+			isUnvalidFirstWord = false;
+			isFirstWord = false;
+			adjacentOp = false; 
 			//			firstword= false;
 			//updateLowestCount();
 			printf("printing words in str arr: query...\n");
 			printarrstr(strarr);
 			//free(str);
 		}
-		
-		int numOr = 0;
-		int blockcount = 0;
-		int start_newblock = 1;
-		int max = 0;
-		int blocknum = 0;
-		for (int l = 0; l < 10; l++){
-		  if (orIndex[l] != 0){
-		    numOr++;
-		  }
-		}
-		printf("numOr = %d\n", numOr);
-		
-		if (!isalpha && !islength && loop){
-		      
-		  int id = 1;	
+
+		// go through words in str arr and update rank only if the string is valid 
+		if (!isalpha && !islength && loop && !emptyString && !isUnvalidFirstWord && !isUnvalidLastWord && !adjacentOp){
+			bool wordAfterOr = true;
+			int id = 1;	
 			// put in ranking
 			// for all documents 
-		      while(id < 82){
-				
+			while(id < 2){
+				totalwordcount = 0;
+				lowestcount = 0;
+				int countTracker[MAXINTS];
+				//initialize countTracker elements to -1;
+				initcountTracker(countTracker);
+				int countTrackPos = 0;
 				//posiiton of strarr to get word
-			int j = 0;
+				int j = 0;
 				// for each word in query
-			if (numOr == 0){
-			  max = 0;
-			}
-			else max = numOr;
-			blocknum=0;
-			//printf("just before for loop, max = %d\n", max);
-			for (int m = 0; m <= max; m++){
-			  //while (strarr[j] != NULL){
-				//printf("just inside for loop, m = %d\n", m);
-		    start_newblock = 1;
-				blocknum = blocknum+1;
-			  while ((orIndex[m] != 0 && j < orIndex[m]) || (orIndex[m] == 0 && strarr[j] != NULL)){
-			  // find count for word at id i
-					//printf("in while loop, looking for word = %s\n", strarr[j]);
-					findWordandCount(hash, strarr[j], id);                                                                                                                                                      
-					//printf("totalcount for word %s at id %d: %d\n", strarr[j], id, totalcount);                                                                                                                            
-					// update count for the specific word if not first time through                                                                                                                   
-					// if first time through lowest count = total count for the word                                                                                                                   
-			    if (start_newblock == 1){                                                                                                                                                                    
-			      lowestcount = totalcount;
-						start_newblock = 0;
-			    }                                                                                                                                                                                 
-			    else{                                                                                                                                                                              
-			      updateLowestCount();                                                                                                                                                             
-			    }                                                                                                                                                                                 
-			    //	printf("lowest count after updating word %s: %d\n", strarr[j], lowestcount); 
-			    j++;
-			    //reset total count
-			    totalcount = 0;
-			  }
-				j++;
-			  //reset count                                                                                                                                                                         
-			  if (blocknum == 1){
-			    blockcount=lowestcount;
-			  }else{
-			     blockcount = blockcount+lowestcount;
-			  }
-				// printf("blocknumber = %d and blockcount = %d and lowestcount = %d\n", blocknum, blockcount, lowestcount);
-			}
+				while (strarr[j] != NULL){
+					//		printf("word at pos %d: %s\n", j, strarr[j]);
+					
+					int checkOperator = checkAndOr(strarr[j]);
+					// only update counts if word is not "or"
+					if (checkOperator != 1){
+						// find count for word at id i
+						
+						findWordandCount(hash, strarr[j], id);                                                                                                   						//printf("totalcount for word %s at id %d: %d\n", strarr[j], id, totalcount);                                                                                                                            
+						// update count for the specific word if not first time through or 1st word after "or"
+						// if first time through or first word after "or", lowest count = total count for the word                                      
+						if (wordAfterOr || j==0){                                                                                                                                                 
+							lowestcount = totalwordcount;
+							wordAfterOr = false;
+							//	printf("lowest count: %d\n", lowestcount);   
+						}                                                                                                                                                                                 
+						else{                                                                                                                                                                              
+							updateLowestCount();                                                                                                                               //printf("lowest count: %d\n", lowestcount);                          
+						}                                                                                                                                                                                 
+						//	printf("lowest count after updating word %s: %d\n", strarr[j], lowestcount); 
+					}
+					// if the word is or, then put lowest count gathered so far into countTracker 
+					else{
+						// put lowest count into countTracker
+						//reset lowest count
+						countTracker[countTrackPos] = lowestcount;
+						countTrackPos++;
+						printcountTracker(countTracker);
+						wordAfterOr = true;
+						lowestcount = 0;
+					}
+					//move onto next word and reset total count					
+					j++;
+					totalwordcount= 0;
+					// put in count of last word of query into countTracker
+					if (strarr[j] == NULL){
+						countTracker[countTrackPos] = lowestcount;
+						lowestcount = 0;
+					}
+				}
+
+				// get rank and put into rankid struct and into queue
+				int addCountPos = 0;
+				int rank = 0;
+				// while it does not hit the last lowest count in the array (all elements are initialized to -1)
+				while (countTracker[addCountPos] != -1){
+					rank = rank + countTracker[addCountPos];
+					addCountPos++;
+					
+				}
+				printcountTracker(countTracker);
+				//reset count                                                                                                                                                                      
 				rankid_t* rankid = (rankid_t*)malloc(sizeof(rankid_t));
-			  
-			  // fill in rankid
-			  rankid->rank = blockcount;
-			  rankid->id = id;
-			  //printf("rankid rank: %d, id %d\n", rankid->rank, rankid->id);
+				
+				// fill in rankid
+				rankid->rank = rank;
+				rankid->id = id;
+				//printf("rankid rank: %d, id %d\n", rankid->rank, rankid->id);
 				
 				// fill in url for rankid
-			  char *url;
-			  url = getURL(id);
-			  rankid->url = url;
+				char *url;
+				url = getURL(id);
+				rankid->url = url;
 				//printf("rankurl from id %d: %s\n", id, rankid->url);
 				
 				//print rankid
-			  printrankid((void*)rankid);
-			  if (rankid->rank !=0){
-			    qput(qrankid, rankid);
-			    hasresult = true;
-			  }
-			  else{
-			    delete_rankid((void*)rankid);
-			  }
-			  
-			  //reset lowest count 
-			  lowestcount = 0;
-			  
-					// move i up 1 for string array position update  
-			  id++;
-		 
-					}
-		      
+				printrankid((void*)rankid);
+				if (rankid->rank !=0){
+					qput(qrankid, rankid);
+					hasresult = true;
+				}
+				else{
+					delete_rankid((void*)rankid);
+				}
+				
+				//reset lowest count 
+				//				lowestcount = 0;
+				
+				// move i up 1 for string array position update  
+				id++;
+			}
 
 			// if there were no ranks above 0 for query, print no results
 			// if there was, after every query processed, print out queue of ranks
@@ -580,9 +721,11 @@ int main(){
 		
 		//this is when eof is called
 		// free usused eof string
-		else{
-			free(str);			
+		// reset empty string boolean
+		else{	
+			free(str);
 		}
+		
 	}
 	
 	// free hash and string array and queue of rankids
@@ -591,6 +734,6 @@ int main(){
 	//freestrarr(strarr);
 	happly(hash, delete_wordqueue);    
 	hclose(hash);
-	
+		
 }
 		
