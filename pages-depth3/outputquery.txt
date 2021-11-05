@@ -1,0 +1,48 @@
+str: modularity reuse or couple or cohesion
+printing queue of rankids...
+rank: 1, id: 3, url: https://thayer.github.io/engs50/Notes/
+rank: 2, id: 7, url: https://thayer.github.io/engs50/Resources/CodingStyle.html
+rank: 1, id: 15, url: https://thayer.github.io/engs50/Notes/intro/
+rank: 1, id: 18, url: https://thayer.github.io/engs50/Notes/bash3/
+rank: 1, id: 23, url: https://thayer.github.io/engs50/Notes/modules/
+rank: 3, id: 25, url: https://thayer.github.io/engs50/Notes/debug/
+rank: 1, id: 26, url: https://thayer.github.io/engs50/Notes/git/
+rank: 22, id: 34, url: https://thayer.github.io/engs50/Notes/cohesion/
+rank: 1, id: 56, url: https://thayer.github.io/engs50/Notes/c2/extra.html
+rank: 1, id: 65, url: https://thayer.github.io/engs50/Notes/debug/extra/
+rank: 1, id: 67, url: https://thayer.github.io/engs50/Notes/git/tags.html
+rank: 3, id: 80, url: https://thayer.github.io/engs50/Notes/cohesion/activity.html
+str: as234
+invalid query because characters not in alphabet
+str: experiment and dew3
+invalid query because characters not in alphabet
+str: as or reside
+invalid query because string less than 3 characters
+str: experiment or def445
+invalid query because characters not in alphabet
+str: reside and !res
+invalid query because characters not in alphabet
+str: figure and	a		refund
+invalid query because characters not in alphabet
+str: and clears
+invalid query because first word is 'and' / 'or'
+str: or meetings
+invalid query because first word is 'and' / 'or'
+str: and simplify
+invalid query because first word is 'and' / 'or'
+str: or cure
+invalid query because first word is 'and' / 'or'
+str: and
+invalid query because first word is 'and' / 'or'
+str: or
+invalid query because first word is 'and' / 'or'
+str: passwords and
+invalid query because 'and' /'or' at the end of query
+str: month or
+invalid query because 'and' /'or' at the end of query
+str: or
+invalid query because first word is 'and' / 'or'
+str: unthrift and or or and math
+invalid query because adjacent 'and'/'or' combination
+str: eof
+program terminated

@@ -103,7 +103,7 @@ int32_t indexsave(hashtable_t *hashtable, char *filename, char *dirname){
 hashtable_t* indexload(char *filename, char *dirname){
 	char pathandfile[MAXARRAY]="";
  	char* word;
-	char newline;
+	//	char newline;
 	doccount_i* doccount;
 	wqueue_i* wqhash;
 	int id=0;

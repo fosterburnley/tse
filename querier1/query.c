@@ -24,7 +24,9 @@
 int totalwordcount = 0;
 int lowestcount = 0;
 //int id = 0;
-
+FILE *inputquery;                                                                                                                                 
+  FILE *outputquery;
+bool quiet = false; 
 /*
  * struct to carry the rank, id, and url 
  */
@@ -47,8 +49,16 @@ void printrankid(void* rankid_v){
 	char *url = "";
 	url = rankid->url;
 	printf("rank: %d, id: %d, url: %s\n", rank, id, url);
-
 }
+
+void fprintrankid(void* rankid_v){                                                                                                                 
+  rankid_t* rankid = (rankid_t*) rankid_v;                                                                                                         
+  int rank = rankid->rank;                                                                                                                         
+  int id = rankid->id;                                                                                                                             
+  char *url = "";                                                                                                                                  
+  url = rankid->url;                                                                                                                               
+  fprintf(outputquery, "rank: %d, id: %d, url: %s\n", rank, id, url);                                                                                            
+}  
 
 
 void printcountTracker(int countTracker[]){
@@ -346,6 +356,16 @@ void resetstrarr(char *strarr[]){
 
 
 }
+void printstatement(char string[]){
+	//	printf(quiet ? "true\n" : "false\n");
+	if (quiet){
+		fprintf(outputquery, "%s", string);
+	}
+	else{
+		printf("%s", string);
+	}
+	
+}
 /*
  * not used 
  */
@@ -358,23 +378,22 @@ void printdocrank(char *tempstr, char *str, int lowestcount){
 	 // put str into strarr at position i                                                                                                                                                                 
 	 strcpy(str, tempstr);                                                                                                                                                                                
 	 printf("each doc string %s\n", str); 
-	 memset(tempstr, '\0', sizeof(tempstr)); 
+	 // memset(tempstr, '\0', sizeof(tempstr)); 
 }
 
 
-//int main(int argc, char *argv[]){
-int main(){
-	/*
+int main(int argc, char *argv[]){
+	//int main(){
+	
 	// load int variables filename and path name to read from 
 	char *filename = argv[2];                                                                                                                       
   char *pagedir = argv[1];
 
-	bool quiet = false; 
+
 	// handle flag case 
 	char ipathandfile[MAXSTRINGS];
 	char opathandfile[MAXSTRINGS];
-	FILE *inputquery;
-	FILE *outputquery;
+
 	// if # of arguments is less than 4
 	if (argc < 3 || argc > 6){                                                                                                                       
     printf("wrong number of arguments: usage error: <pagedir> <indexnm> [-q] < myqueries.txt > myoutput\n");                                                                 
@@ -409,11 +428,11 @@ int main(){
 			}
 		}
 	}
-	*/
+	
 	// structures to handle strings 
 	//char *strarr[MAXSTRINGS];
 	char tempstr[MAXCHAR];
-	char tempword[MAXCHAR];
+	
 	char *word;
 	char *str; 
 	char newline;
@@ -427,13 +446,13 @@ int main(){
 	bool isUnvalidLastWord = false;
 	bool adjacentOp = false; 
 	//	bool firstword = true;
-	char result[MAXSTRINGS];
+	
 
 	// load index into hash
 
 	hashtable_i* hash;
-	//hash = indexload(filename, pagedir);
-	hash = indexload("indexnm1", "pages-depth3");
+	hash = indexload(filename, pagedir);
+	//	hash = indexload(filename, "pages-depth3");
 	if (hash == NULL){
 		exit(EXIT_FAILURE);
 	}
@@ -461,20 +480,25 @@ int main(){
 		int i = 0;	
 
 		str = (char*) calloc(1, MAXSTRINGS * sizeof(char));
-		scanf(" %[^\n]%c", str, &newline); 
-		/*
+		//scanf(" %[^\n]%c", str, &newline); 
+		
 		//scan entire string from user if not quiet and read from input file if quiet
 		if (!quiet){
 			printf(">");
-			scanf("%[^\n]%c", str, &newline);
+			scanf(" %[^\n]%c", str, &newline);
 		}
 		else{
 			char newline[2];
-		  fscanf(inputquery, "%[^\n]%c", str, newline);
+		  fscanf(inputquery, " %[^\n]%c", str, newline);
 			//	printf("str: %s\n", str);  
 		}
-		*/
-		printf("str: %s\n", str);
+
+		if (quiet){
+			fprintf(outputquery, "str: %s\n", str);
+		}
+		else{
+			printf("str: %s\n", str);
+		}
 		
 		memset(tempstr, '\0', sizeof(MAXSTRINGS*sizeof(char)));
 		
@@ -484,19 +508,18 @@ int main(){
 		word = strtok(str, " ");
 		// if user types in empty string or no more input left in quiet mode 
 		if (strcmp(str, "\0") == 0){
-			printf("empty string\n");                                                                                                                   
-        emptyString = true;                                                                                                                        /* 
+			//printstatement("empty string\n");                                                                                                          
+       emptyString = true;                                                                                                                        
 			if (quiet){
-				printf("no more input in input file");
+				//		printf("no more input in input file");
 				exit(EXIT_SUCCESS);
 			}
 			else{
-			
 				printf("empty string\n");
 				emptyString = true;
 				
 			}
-																																																																									 */
+																																																																									
 		}
 		
 		// if string doesn't equal to NULL
@@ -511,13 +534,13 @@ int main(){
 			// if first word is and /or
 			//break;
 			if (isFirstWord && (checkAndOr(word) !=0)){
-				printf("invalid query because first word is 'and' / 'or'\n");
+				printstatement("invalid query because first word is 'and' / 'or'\n");
 				isUnvalidFirstWord = true;
 				isFirstWord = false; 
 				break;
 			}
 			if ((checkAndOr(word) != 0) && lastwordOp){
-				printf("invalid query because adjacent 'and'/'or' combination\n");
+				printstatement("invalid query because adjacent 'and'/'or' combination\n");
 				adjacentOp = true;
 				break; 
 			}
@@ -531,7 +554,7 @@ int main(){
 			// check if the word is eof
 			if (checkEnd(word)==true)
 				{
-				printf("program terminated\n");
+				printstatement("program terminated\n");
 				loop=false;
 				//	free(word);
 				//printarrstr(strarr);
@@ -539,14 +562,14 @@ int main(){
 			}
 			// check if word is actually a word 
 			if (checkAlpha(word)){
-				printf("invalid query because characters not in alphabet\n");
+				printstatement("invalid query because characters not in alphabet\n");
 				//free(word);
 				isalpha = true;
 				break;
 			}
 			// check the length of the word (leave "or)
 			if (checkLength(word) && (checkOperator != 1)){
-				printf("invalid query because string less than 3 characters\n");
+				printstatement("invalid query because string less than 3 characters\n");
 				//free(word);
 				islength = true;
 				break;
@@ -584,7 +607,7 @@ int main(){
 
 			// check if last word is "and"/"or"
 			if (word == NULL && lastwordOp){
-				printf("invalid query because 'and' /'or' at the end of query\n");
+				printstatement("invalid query because 'and' /'or' at the end of query\n");
 				isUnvalidLastWord = true;
 				break;
 			}
@@ -598,8 +621,8 @@ int main(){
 			adjacentOp = false; 
 			//			firstword= false;
 			//updateLowestCount();
-			printf("printing words in str arr: query...\n");
-			printarrstr(strarr);
+			//printf("printing words in str arr: query...\n");
+			//printarrstr(strarr);
 			//free(str);
 		}
 
@@ -609,7 +632,7 @@ int main(){
 			int id = 1;	
 			// put in ranking
 			// for all documents 
-			while(id < 2){
+			while(id < 83){
 				totalwordcount = 0;
 				lowestcount = 0;
 				int countTracker[MAXINTS];
@@ -646,7 +669,7 @@ int main(){
 						//reset lowest count
 						countTracker[countTrackPos] = lowestcount;
 						countTrackPos++;
-						printcountTracker(countTracker);
+						//			printcountTracker(countTracker);
 						wordAfterOr = true;
 						lowestcount = 0;
 					}
@@ -669,7 +692,7 @@ int main(){
 					addCountPos++;
 					
 				}
-				printcountTracker(countTracker);
+				//				printcountTracker(countTracker);
 				//reset count                                                                                                                                                                      
 				rankid_t* rankid = (rankid_t*)malloc(sizeof(rankid_t));
 				
@@ -685,7 +708,7 @@ int main(){
 				//printf("rankurl from id %d: %s\n", id, rankid->url);
 				
 				//print rankid
-				printrankid((void*)rankid);
+				//printrankid((void*)rankid);
 				if (rankid->rank !=0){
 					qput(qrankid, rankid);
 					hasresult = true;
@@ -704,14 +727,19 @@ int main(){
 			// if there were no ranks above 0 for query, print no results
 			// if there was, after every query processed, print out queue of ranks
 			if (hasresult == false){
-				printf("no results found\n");
+				printstatement("no results found\n");
 			}
 			else{
-				 printf("printing queue of rankids...\n");
-				 qapply(qrankid, printrankid);  
+				 printstatement("printing queue of rankids...\n");
+				 if (!quiet){
+					 qapply(qrankid, printrankid);
+				 }
+				 else{
+					 qapply(qrankid, fprintrankid); 
+				 }
 			}
 			//	printf("printing words query...\n");                                                                                                                                                             
-      printarrstr(strarr); 
+			//      printarrstr(strarr); 
 			free(str);
 
 			// reset queue
@@ -724,13 +752,19 @@ int main(){
 		// reset empty string boolean
 		else{	
 			free(str);
+			qapply(qrankid, delete_rankid);
+			qclose(qrankid); 
 		}
 		
 	}
-	
+	//close files
+	if (quiet){
+		fclose(outputquery);
+		fclose(inputquery);
+	}
 	// free hash and string array and queue of rankids
 	//qapply(qrankid, delete_rankid);
-	qclose(qrankid);
+	//	qclose(qrankid);
 	//freestrarr(strarr);
 	happly(hash, delete_wordqueue);    
 	hclose(hash);

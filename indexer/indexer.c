@@ -164,7 +164,7 @@ int NormalizeWord(char* word){
     }
     word[i] = tolower(word[i]);
 		//		printf("currentword: %s", word);
-    return 0;     
+    
   }
   return 0;
 }
