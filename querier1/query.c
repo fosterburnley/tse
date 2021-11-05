@@ -505,7 +505,7 @@ int main(int argc, char *argv[]){
 		//get first word of string 
 		
 		//printf("word within string: %s\n", word);
-		word = strtok(str, " ");
+		word = strtok(str, " \t");
 		// if user types in empty string or no more input left in quiet mode 
 		if (strcmp(str, "\0") == 0){
 			//printstatement("empty string\n");                                                                                                          
@@ -602,7 +602,7 @@ int main(int argc, char *argv[]){
 				i++;
 			}
 			// get next word
-			word = strtok(NULL, " ");
+			word = strtok(NULL, " \t");
 			//printf("word within string: %s\n", word);
 
 			// check if last word is "and"/"or"
