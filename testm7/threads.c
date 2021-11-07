@@ -98,15 +98,16 @@ void print_person(void *vp){
 
 //make person and put in queue
 void *tput(void* argp){
-	person_t *zach= make_person("zach", 20, 2023, 500);
+	char* personname = (char*) argp;
+	person_t *person= make_person(personname, 20, 2023, 500);
 	//person_t *foster = make_person("foster", 22, 2022, 501);
 	//person_t *mikaela = make_person("mikaela", 23, 2021, 502);
 	int i = 0;
 	while (i < 4){
 		sleep(6);
-		printf("putting person zach in shared queue... \n");
+		printf("putting %s in shared queue... \n", personname);
 		//fflush(stdout);
-		lqput(sharedqueue, (void*)zach, &m);
+		lqput(sharedqueue, (void*)person, &m);
 		printf("printing queue...\n");
 		lqapply(sharedqueue, print_person, &m);
 		//printf("deleting people in queue...\n");
@@ -122,9 +123,10 @@ void *tput(void* argp){
 
 // get from queue 
 void tget(){
+ 
 	int i = 0;
-	while(i < 4){
-		sleep(6);
+	while(i < 8){
+		sleep(3);
 		//printf("getting from shared queue...\n");
 		//fflush(stdout); 
 		person_t* person = lqget(sharedqueue, &m);
@@ -134,7 +136,7 @@ void tget(){
 		i++;
 		//delete_person(person);
 	}
-	//	lqapply(sharedqueue, print_person, &m);
+	lqapply(sharedqueue, print_person, &m);
 	//	return NULL;
 }
 
@@ -202,13 +204,14 @@ int main(){
 	pthread_mutex_init(&m, NULL);
 
 	//make people
-	char* personname = "zach";
+
 	
 	// initilize shared queue
 	sharedqueue = lqopen(&m);
 
 	// create the threads
-	createThread(&t1, tput, NULL);	
+	createThread(&t1, tput, "zach");
+	createThread(&t2, tput, "foster");
 	tget();
 	/*
 	// wait until t1 is done
@@ -228,6 +231,9 @@ int main(){
 	if (pthread_join(t1, NULL)!=0){                                                                                                                                                                          
     exit(EXIT_FAILURE);                                                                                                                                                                                    
   }
+	if(pthread_join(t2, NULL)!=0){
+		exit(EXIT_FAILURE);
+	}
 	/*
 	if (pthread_join(t2, NULL)!=0){                                                                                                                                                                          
     exit(EXIT_FAILURE);                                                                                                                                                                                    
