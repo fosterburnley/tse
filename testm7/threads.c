@@ -23,6 +23,7 @@ queue_t* sharedqueue;
 pthread_mutex_t m;
 int threadid = 1;
 
+int counter = 0;
 typedef struct person {                                                                                                                                                              
   char name[MAXREG];                                                                                                                                                                 
    int age;                                                                                                                                                                          
@@ -71,7 +72,8 @@ if (pthread_create(thread, NULL, fn, argp)!=0){
 	exit(EXIT_FAILURE);                                                                                                                                                                                   
   }                                                                                                                                                                                                        
  else{                                                                                                                                                                                                    
-	 printf("within thread %d\n", threadid);                                                                                                                                                                    threadid++;
+	 //printf("within thread %d\n", threadid);
+	 threadid++;
  } 
 
 }
@@ -91,39 +93,49 @@ void print_person(void *vp){
                                                                                                                                                                                      
   //  printf("name: %s, gradYear = %d, fav = %d, age = %d \n\n", pp->name, pp->gradYear, pp->fav, pp->age);                                                                          
   printf("name %s, age %d, gradYear %d, fav %d \n\n", pp1->name, pp1->age, pp1->gradYear, pp1 ->fav);                                                                                
-	fflush(stdout); 
+	//fflush(stdout); 
 }
 
 //make person and put in queue
 void *tput(void* argp){
 	person_t *zach= make_person("zach", 20, 2023, 500);
-	
-	printf("putting person zach in shared queue... \n");
-	fflush(stdout);
-	lqput(sharedqueue, (void*)zach, &m);
-	printf("printing queue...\n");
- 	lqapply(sharedqueue, print_person, &m);
-	//printf("deleting people in queue...\n");
+	//person_t *foster = make_person("foster", 22, 2022, 501);
+	//person_t *mikaela = make_person("mikaela", 23, 2021, 502);
+	int i = 0;
+	while (i < 4){
+		sleep(6);
+		printf("putting person zach in shared queue... \n");
+		//fflush(stdout);
+		lqput(sharedqueue, (void*)zach, &m);
+		printf("printing queue...\n");
+		lqapply(sharedqueue, print_person, &m);
+		//printf("deleting people in queue...\n");
 	
 	//lqapply(sharedqueue, delete_person, &m);
 	
 	//printf("printing queue...\n");
-	//lqapply(sharedqueue, print_person, &m); 
+	//lqapply(sharedqueue, print_person, &m);
+		i++;
+	}
 	return NULL;
 }
 
 // get from queue 
-void* tget(void* argp){
-
-	printf("getting from shared queue...\n");
-	fflush(stdout); 
-	person_t* person = lqget(sharedqueue, &m);
-	printf("got person from shared queue...");
-	fflush(stdout); 
-	print_person(person);
-	delete_person(person);
+void tget(){
+	int i = 0;
+	while(i < 4){
+		sleep(6);
+		//printf("getting from shared queue...\n");
+		//fflush(stdout); 
+		person_t* person = lqget(sharedqueue, &m);
+		printf("got person from shared queue...");
+		//fflush(stdout); 
+		print_person(person);
+		i++;
+		//delete_person(person);
+	}
 	//	lqapply(sharedqueue, print_person, &m);
-	return NULL;
+	//	return NULL;
 }
 
 bool searchfn(void* elementp, const void* keyp){
@@ -190,28 +202,52 @@ int main(){
 	pthread_mutex_init(&m, NULL);
 
 	//make people
-
+	char* personname = "zach";
 	
 	// initilize shared queue
 	sharedqueue = lqopen(&m);
 
 	// create the threads
 	createThread(&t1, tput, NULL);	
-  
+	tget();
+	/*
 	// wait until t1 is done
 	if (pthread_join(t1, NULL)!=0){
 		exit(EXIT_FAILURE);
 	}
-
-	createThread(&t2, tget, NULL);
+	*/
 	
-	
-	if (pthread_join(t1, NULL)!=0){                                                                                                                                                    
-    exit(EXIT_FAILURE);                                                                                                                                                              
-	}
+	//createThread(&t2, tget, NULL);
+	/*
+	createThread(&t3, tput, NULL);
+	createThread(&t4, tsearch, (void*) personname);
+	createThread(&t5, tremove, (void*) personname);   
+	*/
 
 	
-
+	if (pthread_join(t1, NULL)!=0){                                                                                                                                                                          
+    exit(EXIT_FAILURE);                                                                                                                                                                                    
+  }
+	/*
+	if (pthread_join(t2, NULL)!=0){                                                                                                                                                                          
+    exit(EXIT_FAILURE);                                                                                                                                                                                    
+  } 
+	*/
+	  
+	//	pthread_exit();
+	/*
+	if (pthread_join(t3, NULL)!=0){                                                                                                                                                                          
+    exit(EXIT_FAILURE);                                                                                                                                                                                    
+  }   
+	if(pthread_join(t4, NULL)!=0){                                                                                                                                                                           
+    exit(EXIT_FAILURE);                                                                                                                                                                                    
+  }           
+	if (pthread_join(t5, NULL)!=0){                                                                                                                                                                          
+		exit(EXIT_FAILURE);                                                                                                                                                                                    
+  } 
+	
+	*/
+	/*
 
 	// put zach back in
 	createThread(&t3, tput, NULL);
@@ -220,7 +256,7 @@ int main(){
 	}
 
 	//search for zach
-	char* personname = "zach";
+
 	 
 	createThread(&t4, tsearch, (void*) personname);
 	if(pthread_join(t3, NULL)!=0){                                                                                                                                                                          
@@ -232,7 +268,7 @@ int main(){
     exit(EXIT_FAILURE);                                                                                                                                                                                   
   }
 	
-	
+	*/
 	/*
 	if (pthread_join(t2, NULL)!=0){                                                                                                                                                 
 		// printf("within thread 1\n");                                                                                                                                                  
@@ -240,7 +276,7 @@ int main(){
 	}      
 	*/
 	// destroy mutex after all threads terminated
-
+ 
 	printf("deleting people in queue...\n");
 	lqapply(sharedqueue, delete_person, &m);
 	
