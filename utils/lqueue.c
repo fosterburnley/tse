@@ -87,7 +87,7 @@ void lqapply(queue_t *qp, void (*fn)(void* elementp), pthread_mutex_t* m){
  */
 void* lqsearch(queue_t *qp, bool (*searchfn)(void* elementp, const void* keyp), const void* skeyp, pthread_mutex_t* m){
 	unlockMutex(m);
-	//printf("searching for element in queue...\n");
+	printf("searching for element in queue...\n");
 	void* found = qsearch(qp, searchfn, skeyp);
 	lockMutex(m);
 	return found; 

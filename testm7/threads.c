@@ -36,6 +36,7 @@ typedef struct person {
 void delete_person(void* person_v){
 
 	person_t* person = (person_t*) person_v;
+	printf("freeing person: %s\n", person->name);
 	free(person);
 
 }
@@ -73,7 +74,7 @@ if (pthread_create(thread, NULL, fn, argp)!=0){
   }                                                                                                                                                                                                        
  else{                                                                                                                                                                                                    
 	 //printf("within thread %d\n", threadid);
-	 threadid++;
+	 //threadid++;
  } 
 
 }
@@ -99,12 +100,14 @@ void print_person(void *vp){
 //make person and put in queue
 void *tput(void* argp){
 	char* personname = (char*) argp;
-	person_t *person= make_person(personname, 20, 2023, 500);
+	person_t *person; 
 	//person_t *foster = make_person("foster", 22, 2022, 501);
 	//person_t *mikaela = make_person("mikaela", 23, 2021, 502);
 	int i = 0;
-	while (i < 4){
-		sleep(6);
+	while (i < 2){
+		sleep(4);
+		person = make_person(personname, 20, 2023, 500);
+		printf("int i tput: %d\n", i); 
 		printf("putting %s in shared queue... \n", personname);
 		//fflush(stdout);
 		lqput(sharedqueue, (void*)person, &m);
@@ -126,6 +129,7 @@ void tget(){
  
 	int i = 0;
 	while(i < 8){
+		printf("int i tget: %d\n", i); 
 		sleep(3);
 		//printf("getting from shared queue...\n");
 		//fflush(stdout); 
@@ -134,9 +138,10 @@ void tget(){
 		//fflush(stdout); 
 		print_person(person);
 		i++;
-		//delete_person(person);
+		delete_person(person);
+			lqapply(sharedqueue, print_person, &m);
 	}
-	lqapply(sharedqueue, print_person, &m);
+
 	//	return NULL;
 }
 
@@ -156,21 +161,27 @@ bool searchfn(void* elementp, const void* keyp){
 // search  from queue
 // argp should be person's name 
 void* tsearch(void* argp){
-	//person name as key 
+	//person name as key
 	char* personname = (char*) argp;
-	person_t* found;
-	printf("searching for %s from sharedqueue...\n", personname);
-	
-	found = (person_t*) lqsearch(sharedqueue, searchfn, (void*)(personname), &m);
-	if (found == NULL){
-		printf("could not find person named %s in shared queue\n", personname);
-		return NULL;
+	int i = 1;
+	while (i < 10){
+		sleep(2);
+		printf("in ti tsearch: %d\n", i);
+		person_t* found;
+		printf("searching for %s from sharedqueue...\n", personname);
+		
+		found = (person_t*) lqsearch(sharedqueue, searchfn, (void*)(personname), &m);
+		if (found == NULL){
+			printf("could not find person named %s in shared queue\n", personname);
+		}
+		else{
+			printf("found person in shared queue: \n");
+			print_person((void*)found);
+		}
+		i++;
 	}
-	else{
-		printf("found person in shared queue: \n");
-		print_person((void*)found);
-		return (void*) found;
-	}		
+	
+	return NULL;
 }
 
 void* tremove(void* argp){
@@ -212,6 +223,10 @@ int main(){
 	// create the threads
 	createThread(&t1, tput, "zach");
 	createThread(&t2, tput, "foster");
+	createThread(&t3, tsearch, "zach");
+	//createThread(&t4, tsearch, "mikaela");
+
+	
 	tget();
 	/*
 	// wait until t1 is done
@@ -228,12 +243,35 @@ int main(){
 	*/
 
 	
-	if (pthread_join(t1, NULL)!=0){                                                                                                                                                                          
+	if (pthread_join(t1, NULL)!=0){                                                                                                                                                            
     exit(EXIT_FAILURE);                                                                                                                                                                                    
   }
+	else{
+		printf("t1 terminated\n");
+	}
+	
 	if(pthread_join(t2, NULL)!=0){
 		exit(EXIT_FAILURE);
 	}
+	else{                                                                                                                                                                                      
+    printf("t2 terminated\n");                                                                                                                                                                
+  }
+	
+	
+	if (pthread_join(t3, NULL)!=0){
+		exit(EXIT_FAILURE);
+	}
+	else{                                                                                                                                                                                    
+    printf("t3 terminated\n");                                                                                                                                                                
+  }
+	/*
+	if(pthread_join(t4, NULL)!=0){
+		exit(EXIT_FAILURE);
+	}
+	else{                                                                                                                                                                                      
+    printf("t4 terminated\n");                                                                                                                                                                
+  } 
+	*/
 	/*
 	if (pthread_join(t2, NULL)!=0){                                                                                                                                                                          
     exit(EXIT_FAILURE);                                                                                                                                                                                    
