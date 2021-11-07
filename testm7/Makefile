@@ -1,0 +1,9 @@
+CFLAGS=-Wall -pedantic -std=c11 -g -I../utils -L../lib
+LIBS=-lutils -lcurl
+
+threads:		threads.c
+						gcc $(CFLAGS) threads.c $(LIBS) -o $@ -lpthread 
+
+clean:
+					rm -f *.o threads
+

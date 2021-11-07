@@ -318,7 +318,7 @@ char* getURL(int id){
 	//	printf("looking for file in %s\n", pathandfile);
 	fp = fopen(pathandfile, "r");
 	if (fp == NULL){
-		printf("warning: can't find file to get URL for query rank");
+		printf("warning: can't find file to get URL for query rank\n");
 		return NULL;
 	}
 	
@@ -423,7 +423,7 @@ int main(int argc, char *argv[]){
 			inputquery = fopen(ipathandfile, "r");
 			outputquery = fopen(opathandfile, "w");
 			if (inputquery == NULL){
-				printf("input file cannot be found");
+				printf("input file cannot be found\n");
 				exit(EXIT_FAILURE);
 			}
 		}
