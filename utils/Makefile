@@ -22,6 +22,9 @@ indexio.o:	indexio.c indexio.h
 lqueue.o:   lqueue.c queue.h
 						gcc $(CFLAGS) -c lqueue.c 
 
+lhash.o: lhash.c hash.c
+	gcc $(CFLAGS) -c lhash.c
+
 #ltest: ltest.o list.o
 #	gcc $(CFLAGS) ltest.o list.o -o ${@}
 
