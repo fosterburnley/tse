@@ -115,26 +115,12 @@ void* tput(void* argp){
     person = make_person(personname, 20, 2023, 500);
     printf("int 1 tput: %d\n", i);
     printf("putting %s in shared hash... \n", personname);
-    lhput(sharedhash, (void*) person, &m); // need to double check these are correct format
+    lhput(sharedhash, (void*) person, personname, strlen(personname), &m); 
     printf("printing hash...\n");
     lhapply(sharedhash, print_person, &m);
     i++;
   }
   return NULL;
-}
-
-void tget(){
-  int i = 0;
-  while(i < 8){
-    printf("int i tget: %d\n", i);
-    sleep(3);
-    person_t* person = lhget(sharedhash, &m);
-    printf("got person from shared hash...\n");
-    print_person(person);
-    i++;
-    delete_person(person);
-    lhapply(sharedhash, print_person, &m);
-  }
 }
 
 void* tsearch(void* argp){
@@ -146,7 +132,7 @@ void* tsearch(void* argp){
     person_t* found;
     printf("searching for %s from sharedhash...\n");
 
-    found = (person_t*) lhsearch(sharedhash, searchfn, (void*)(personname), &m);
+    found = (person_t*) lhsearch(sharedhash, searchfn, personname, strlen(personname), &m);
     if (found == NULL){
       printf("could not find person named %s in shared hash\n", personname);
     }
@@ -155,7 +141,7 @@ void* tsearch(void* argp){
       print_person((void*)found);
     }
     i++;
-    }
+  }
   return NULL;
 }
 
@@ -163,7 +149,7 @@ void* tremove(void* argp){
   char* personname = (char*) argp;
   printf("removing person named %s from the shared hash..\n", personname);
   person_t* removed;
-  removed = (person_t*) lhremove(sharedhash, searchfn, (void*)(personname), &m);
+  removed = (person_t*) lhremove(sharedhash, searchfn, personname, strlen(personname), &m);
   if (removed == NULL){
     printf("could not remove person named %s in shared hash\n", personname);
     return NULL;
