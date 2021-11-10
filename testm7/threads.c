@@ -20,10 +20,14 @@
 
 // declare shared queue and mutex 
 queue_t* sharedqueue;
-pthread_mutex_t m;
+//pthread_mutex_t m;
 int threadid = 1;
 
 int counter = 0;
+
+int zach = 0;
+int foster = 0;
+int mikaela=0;
 typedef struct person {                                                                                                                                                              
   char name[MAXREG];                                                                                                                                                                 
    int age;                                                                                                                                                                          
@@ -104,15 +108,15 @@ void *tput(void* argp){
 	//person_t *foster = make_person("foster", 22, 2022, 501);
 	//person_t *mikaela = make_person("mikaela", 23, 2021, 502);
 	int i = 0;
-	while (i < 2){
-		sleep(4);
+	while (i < 100){
+		//sleep(5);
 		person = make_person(personname, 20, 2023, 500);
-		printf("int i tput: %d\n", i); 
+		//printf("int i tput: %d\n", i); 
 		printf("putting %s in shared queue... \n", personname);
 		//fflush(stdout);
-		lqput(sharedqueue, (void*)person, &m);
+		lqput(sharedqueue, (void*)person);
 		printf("printing queue...\n");
-		lqapply(sharedqueue, print_person, &m);
+		lqapply(sharedqueue, print_person);
 		//printf("deleting people in queue...\n");
 	
 	//lqapply(sharedqueue, delete_person, &m);
@@ -128,18 +132,27 @@ void *tput(void* argp){
 void tget(){
  
 	int i = 0;
-	while(i < 8){
+	while(i < 300){
 		printf("int i tget: %d\n", i); 
-		sleep(3);
+		//sleep(10);
 		//printf("getting from shared queue...\n");
 		//fflush(stdout); 
-		person_t* person = lqget(sharedqueue, &m);
+		person_t* person = lqget(sharedqueue);
 		printf("got person from shared queue...");
 		//fflush(stdout); 
 		print_person(person);
 		i++;
+		if (strcmp(person->name, "zach") == 0){
+			zach++;
+		}
+		else if (strcmp(person->name, "foster") == 0){
+			foster++;
+		}
+		else if (strcmp(person->name, "mikaela") ==0){
+			mikaela++;
+		}
 		delete_person(person);
-			lqapply(sharedqueue, print_person, &m);
+		lqapply(sharedqueue, print_person);
 	}
 
 	//	return NULL;
@@ -165,12 +178,12 @@ void* tsearch(void* argp){
 	char* personname = (char*) argp;
 	int i = 1;
 	while (i < 10){
-		sleep(2);
+		//		sleep(4);
 		printf("in ti tsearch: %d\n", i);
 		person_t* found;
 		printf("searching for %s from sharedqueue...\n", personname);
 		
-		found = (person_t*) lqsearch(sharedqueue, searchfn, (void*)(personname), &m);
+		found = (person_t*) lqsearch(sharedqueue, searchfn, (void*)(personname));
 		if (found == NULL){
 			printf("could not find person named %s in shared queue\n", personname);
 		}
@@ -185,23 +198,27 @@ void* tsearch(void* argp){
 }
 
 void* tremove(void* argp){
-	char* personname = (char*) argp;
-	printf("removing person named  %s from sharedqueue...\n", personname);
-	person_t* removed;
-	removed  = (person_t*) lqremove(sharedqueue, searchfn, (void*)(personname), &m);
-	 if (removed == NULL){
-		 printf("could not remove person named %s in shared queue\n", personname); 
-		 return NULL;
-	 }
-	 else{
-		 printf("removed person in shared queue: \n");
-		 print_person((void*) removed);
-		 printf("printing resulting shared queue after removal of %s: \n", personname);
-		 lqapply(sharedqueue, print_person, &m);
-		 delete_person(removed);
-	 }
+	int i = 0;
+	while (i < 100){
+		char* personname = (char*) argp;
+		printf("removing person named  %s from sharedqueue...\n", personname);
+		person_t* removed;
+		removed  = (person_t*) lqremove(sharedqueue, searchfn, (void*)(personname));
+		if (removed == NULL){
+			printf("could not remove person named %s in shared queue\n", personname); 
+			return NULL;
+		}
+		else{
+			printf("removed person in shared queue: \n");
+			print_person((void*) removed);
+			printf("printing resulting shared queue after removal of %s: \n", personname);
+			lqapply(sharedqueue, print_person);
+			delete_person(removed);
+		}
+		i++;
+	}
 	 return NULL;
-}
+} 
 
 
 int main(){
@@ -212,22 +229,20 @@ int main(){
 	pthread_t t3 = 0;
 	pthread_t t4 = 0;
 	pthread_t t5 = 0;
-	pthread_mutex_init(&m, NULL);
+	//	pthread_mutex_init(&m, NULL);
 
 	//make people
 
 	
 	// initilize shared queue
-	sharedqueue = lqopen(&m);
+	sharedqueue = lqopen();
 
 	// create the threads
 	createThread(&t1, tput, "zach");
 	createThread(&t2, tput, "foster");
-	createThread(&t3, tsearch, "zach");
+	createThread(&t3, tput, "mikaela"); 
+	//	createThread(&t3, tsearch, "zach");
 	//createThread(&t4, tsearch, "mikaela");
-
-	
-	tget();
 	/*
 	// wait until t1 is done
 	if (pthread_join(t1, NULL)!=0){
@@ -256,14 +271,27 @@ int main(){
 	else{                                                                                                                                                                                      
     printf("t2 terminated\n");                                                                                                                                                                
   }
+	if(pthread_join(t3, NULL)!=0){                                                                                                                
+    exit(EXIT_FAILURE);                                                                                                                         
+  }                                                                                                                                             
+  else{                                                                                                                                         
+                                                                                                                                                
+    printf("t3 terminated\n");                                                                                                                  
+                                                                                                                                                
+  }
+	lqapply(sharedqueue, print_person);     
+	tget();
+	//tremove();
+	printf("zach count: %d, foster count: %d, mikaela count: %d\n", zach, foster, mikaela);
 	
-	
+	/*
 	if (pthread_join(t3, NULL)!=0){
 		exit(EXIT_FAILURE);
 	}
 	else{                                                                                                                                                                                    
     printf("t3 terminated\n");                                                                                                                                                                
   }
+	*/
 	/*
 	if(pthread_join(t4, NULL)!=0){
 		exit(EXIT_FAILURE);
@@ -320,14 +348,15 @@ int main(){
 	}      
 	*/
 	// destroy mutex after all threads terminated
- 
+	//lqapply(sharedqueue, print_person, &m);
+	/*
 	printf("deleting people in queue...\n");
 	lqapply(sharedqueue, delete_person, &m);
 	
   lqclose(sharedqueue, &m);
 	
 	pthread_mutex_destroy(&m);
-
+	*/
 	
 	//printf("dummy after create thread: %d\n", dummy);
 	return 0;

@@ -22,7 +22,7 @@ void lockMutex(pthread_mutex_t * m){
 
 // hopen -- opens a hash table with the initial size hsize
 hashtable_t* lhopen(uint32_t hsize, pthread_mutex_t* m){
-  unlockedMutex(m);
+  unlockMutex(m);
   printf("opening hashtable...\n");
   hashtable_t* hash = hopen(hsize);
   lockMutex(m);

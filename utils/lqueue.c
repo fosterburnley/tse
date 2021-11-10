@@ -9,16 +9,17 @@
 #include <pthread.h> 
 #include <unistd.h>  
 
+pthread_mutex_t m;
 
-void unlockMutex(pthread_mutex_t* m){
-	pthread_mutex_unlock(m);
+void unlockMutex(){
+	pthread_mutex_unlock(&m);
 	//printf("mutex %p unlocked\n", (void*) m);
 	//fflush(stdout);
 	//sleep(3);
 }
 
-void lockMutex(pthread_mutex_t* m){
-	pthread_mutex_lock(m);
+void lockMutex(){
+	pthread_mutex_lock(&m);
 	//printf("mutex %p locked\n\n", (void*) m);
 	//	fflush(stdout);
 	//sleep(3);
@@ -27,52 +28,58 @@ void lockMutex(pthread_mutex_t* m){
 /* create an empty queue 
  * # 
  */
-queue_t* lqopen(pthread_mutex_t* m){
+queue_t* lqopen(){
 	//printf("shared resource: %d", sharedresource);
-	unlockMutex(m);
+	if (pthread_mutex_init(&m, NULL)!=0){
+		printf("initialization of mutex failed\n");
+		return NULL;
+	}
+	lockMutex();
 	printf("opening queue..\n");
 	queue_t* queue = qopen();
-	lockMutex(m);
+	unlockMutex();
 	return queue;
 }
 
 
 /* deallocate a queue, frees everything in it */
-void lqclose(queue_t *qp, pthread_mutex_t* m){
-	unlockMutex(m);
+void lqclose(queue_t *qp){
+	lockMutex();
 	printf("closing queue...\n");
 	qclose(qp);
-	lockMutex(m);  
+	unlockMutex();
+	pthread_mutex_destroy(&m);
 
 }
 
 /* put element at the end of the queue
  * returns 0 is successful; nonzero otherwise 
  */
-int32_t lqput(queue_t *qp, void *elementp, pthread_mutex_t* m){
-	unlockMutex(m);
+int32_t lqput(queue_t *qp, void *elementp){
+	lockMutex();
 	//printf("putting element in queue...\n");
+	//	sleep(5);
 	qput(qp, elementp);
-	lockMutex(m);
+	unlockMutex();
 	return 0;
 
 }
 
 /* get the first first element from queue, removing it from the queue */
-void* lqget(queue_t *qp, pthread_mutex_t* m){
-	unlockMutex(m);
+void* lqget(queue_t *qp){
+	lockMutex();
 	//printf("getting element in queue...\n");
 	void* result = qget(qp);
-	lockMutex(m);
+	unlockMutex();
 	return result;
 }
 
 /* apply a function to every element of the queue */
-void lqapply(queue_t *qp, void (*fn)(void* elementp), pthread_mutex_t* m){
-	unlockMutex(m);
+void lqapply(queue_t *qp, void (*fn)(void* elementp)){
+	lockMutex();
 	//printf("applying function to queue...\n");
 	qapply(qp, fn);
-	lockMutex(m);
+	unlockMutex();
 
 }
 
@@ -85,11 +92,11 @@ void lqapply(queue_t *qp, void (*fn)(void* elementp), pthread_mutex_t* m){
  *          -- returns TRUE or FALSE as defined in bool.h
  * returns a pointer to an element, or NULL if not found
  */
-void* lqsearch(queue_t *qp, bool (*searchfn)(void* elementp, const void* keyp), const void* skeyp, pthread_mutex_t* m){
-	unlockMutex(m);
+void* lqsearch(queue_t *qp, bool (*searchfn)(void* elementp, const void* keyp), const void* skeyp){
+	lockMutex();
 	printf("searching for element in queue...\n");
 	void* found = qsearch(qp, searchfn, skeyp);
-	lockMutex(m);
+	unlockMutex();
 	return found; 
 }
 
@@ -101,11 +108,11 @@ void* lqsearch(queue_t *qp, bool (*searchfn)(void* elementp, const void* keyp), 
  * removes the element from the queue and returns a pointer to it or
  * NULL if not found
  */
-void* lqremove(queue_t *qp, bool (*searchfn)(void* elementp,const void* keyp), const void* skeyp, pthread_mutex_t* m){
-	unlockMutex(m);
+void* lqremove(queue_t *qp, bool (*searchfn)(void* elementp,const void* keyp), const void* skeyp){
+	lockMutex();
 	//printf("removing element from queue...\n");
 	void* removed = qremove(qp, searchfn, skeyp);
-	lockMutex(m);
+	unlockMutex();
 	return removed; 
 }
 
