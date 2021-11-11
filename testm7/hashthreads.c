@@ -165,47 +165,42 @@ void* tremove(void* argp){
 }
 
 int main(){
-	//printf("Made it into main function\n\n");
-	person_t*steve = make_person("Steve", 50, 1999, 3);
-	person_t*elise = make_person("elise", 80, 1963, 8);
-	person_t*mike = make_person("mike", 53, 1963, 15);
-	//person_t*pam = make_person("pam", 45, 1980, 30);
-	//person_t*tom = make_person("tom", 30, 1990, 25);
-  //person_t*jess = make_person("jess", 25, 2000, 17);                                           
-	person_t* blank1;
-	person_t* blank2;
-	
-  hashtable_t* hash1 = hopen(HASHSIZE);
-	//printf("just opened a hastable\n\n");
-	//print on empty hashtable
-	happly(hash1, print_person);
+  pthread_t t1 = 0;
+  pthread_t t2 = 0;
+  pthread_t t3 = 0;
+  pthread_t t4 = 0;
+  pthread_t t5 = 0;
 
-	//remove from an empty hashtable
-	blank1 = hremove(hash1, searchfn, mike->name, 4);
-	//printf("just did happly\n\n");
+  sharedhash = lhopen();
+  createThread(&t1, tput, "zach");
+  createThread(&t2, tput, "foster");
+  createThread(&t3, tput, "mikaela");
 
-	hput(hash1, (void*)(steve), steve->name, 5);
-	hput(hash1, (void*)(elise), elise->name, 5);
-	hput(hash1, (void*)(mike), mike->name, 4);
-	
-	
-	//printf("just hput 1 people\n\n");
-	happly(hash1, print_person); 
-	printf("just before hsearch\n\n");
+  if(pthread_join(t1, NULL)!=0{
+      exit(EXIT_FAILURE);
+    }
+    else{
+      printf("t1 terminated\n");
+    }
 
-	blank1 = (person_t*)hsearch(hash1,searchfn,steve->name,5);
-	print_person((void*)(blank1));
-	printf("about to remove steve\n\n");
-	blank2 = (person_t*)hremove(hash1,searchfn,mike->name,4);
-	print_person((void*)(blank2));
-	printf("printing those who are left\n\n");
-	happly(hash1, print_person);
-	hclose(hash1);
+   if(pthread_join(t2, NULL)!=0{
+       exit(EXIT_FAILURE);
+     }
+     else{
+       printf("t2 terminated\n");
+     }
 
-	
+     if(pthread_join(t1, NULL)!=0{
+	 exit(EXIT_FAILURE);
+       }
+       else{
+	 printf("t3 terminated\n");
+       }
 
-	// do not need to free the blanks bc they are pointing to same spot in memory as steve and mike 
-	free(steve);
-	free(elise);
-	free(mike);
+       lhapply(sharedhash, print_person);
+       tget();
+       printf("zach count: %d, foster count: %d, mikaela count: %d\n", zach, foster, mikaela);
+       
+       
+  return 0;
 }
