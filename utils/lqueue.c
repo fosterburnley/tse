@@ -31,7 +31,7 @@ void lockMutex(){
 queue_t* lqopen(){
 	//printf("shared resource: %d", sharedresource);
 	if (pthread_mutex_init(&m, NULL)!=0){
-		printf("initialization of mutex failed\n");
+		printf("initialization of mutex for queue failed\n");
 		return NULL;
 	}
 	lockMutex();

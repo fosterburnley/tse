@@ -132,15 +132,16 @@ void *tput(void* argp){
 void tget(){
  
 	int i = 0;
-	while(i < 300){
+	while(i < 350){
 		printf("int i tget: %d\n", i); 
 		//sleep(10);
 		//printf("getting from shared queue...\n");
-		//fflush(stdout); 
+		//fflush(stdout);
+		
 		person_t* person = lqget(sharedqueue);
 		printf("got person from shared queue...");
 		//fflush(stdout); 
-		print_person(person);
+		//print_person(person);
 		i++;
 		if (strcmp(person->name, "zach") == 0){
 			zach++;
@@ -152,7 +153,7 @@ void tget(){
 			mikaela++;
 		}
 		delete_person(person);
-		lqapply(sharedqueue, print_person);
+		//		lqapply(sharedqueue, print_person);
 	}
 
 	//	return NULL;
@@ -212,6 +213,18 @@ void* tremove(void* argp){
 			printf("removed person in shared queue: \n");
 			print_person((void*) removed);
 			printf("printing resulting shared queue after removal of %s: \n", personname);
+			if (strcmp(removed->name, "zach") == 0){                                                                                                           
+        zach++;                                                                                                                                          
+        printf("zach count: %d\n", zach);                                                                                                                
+      }                                                                                                                                                  
+      else if (strcmp(removed->name, "foster") == 0){                                                                                                    
+        foster++;                                                                                                                                        
+        printf("foster count: %d\n", foster);                                                                                                            
+      }                                                                                                                                                  
+      else if (strcmp(removed->name, "mikaela") ==0){                                                                                                    
+        mikaela++;                                                                                                                                       
+        printf("mikaela count: %d\n", mikaela);                                                                                                          
+      }      
 			lqapply(sharedqueue, print_person);
 			delete_person(removed);
 		}
@@ -280,9 +293,16 @@ int main(){
                                                                                                                                                 
   }
 	lqapply(sharedqueue, print_person);     
-	tget();
-	//tremove();
+	//tget();
+	
+	
+	tremove("zach");
+	tremove("foster");
+	tremove("mikaela");
+	lqclose(sharedqueue);
+
 	printf("zach count: %d, foster count: %d, mikaela count: %d\n", zach, foster, mikaela);
+	
 	
 	/*
 	if (pthread_join(t3, NULL)!=0){

@@ -12,59 +12,68 @@
 #define MAXCHAR 100
 #define MAXARR 2000
 
-void unlockMutex(pthread_mutex_t * m){
-  pthread_mutex_unlock(m);
+pthread_mutex_t m;  
+
+
+void unlockMutex(){
+  pthread_mutex_unlock(&m);
 }
 
-void lockMutex(pthread_mutex_t * m){
-  pthread_mutex_lock(m);
+void lockMutex(){
+  pthread_mutex_lock(&m);
 }
 
 // hopen -- opens a hash table with the initial size hsize
-hashtable_t* lhopen(uint32_t hsize, pthread_mutex_t* m){
-  unlockMutex(m);
+hashtable_t* lhopen(uint32_t hsize){
+  
+	if ((pthread_mutex_init(&m, NULL) != 0)){
+		printf("initialization of mutex for hash failed\n"); 
+		return NULL;
+	}
+	lockMutex();
   printf("opening hashtable...\n");
   hashtable_t* hash = hopen(hsize);
-  lockMutex(m);
+  unlockMutex();
   return hash;
 }
 
 
 // hclose -- closes hash table
-void lhclose(hashtable_t *htp, pthread_mutex_t* m){
-  unlockMutex(m);
+void lhclose(hashtable_t *htp){
+  lockMutex();
   printf("closing hashtable...\n");
   hclose(htp);
-  lockMutex(m);
+  unlockMutex();
+	pthread_mutex_destroy(&m);
 }
 
 // hput -- puts an entry into a hash table under designated key
 // returns 0 for sucess; nonzero otherwise
-int32_t lhput(hashtable_t *htp, void *ep, const char *key, int keylen, pthread_mutex_t* m){
-  unlockMutex(m);
+int32_t lhput(hashtable_t *htp, void *ep, const char *key, int keylen){
+  lockMutex();
   hput(htp, ep, key, keylen);
-  lockMutex(m);
+  unlockMutex();
   return 0; 
 }
 
 // happly -- applies a function to every entry in the hash table
-void lhapply(hashtable_t *htp, void(*fn)(void*ep), pthread_mutex_t* m){
-  unlockMutex(m);
+void lhapply(hashtable_t *htp, void(*fn)(void*ep)){
+  lockMutex();
   happly(htp, fn);
-  lockMutex(m);
+  unlockMutex();
 }
 
-void* lhsearch(hashtable_t *htp, bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen, pthread_mutex_t* m){
-  unlockMutex(m);
+void* lhsearch(hashtable_t *htp, bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen){
+  lockMutex();
   printf("searching for element in hashtable...\n");
   void* found = hsearch(htp, searchfn, key, keylen);
-  lockMutex(m);
+  unlockMutex();
   return found;
 }
 
-void* lhremove(hashtable_t *htp, bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen, pthread_mutex_t* m){
-  unlockMutex(m);
+void* lhremove(hashtable_t *htp, bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen){
+  lockMutex();
   void* removed = hremove(htp, searchfn, key, keylen);
-  lockMutex(m);
+  unlockMutex();
   return removed;
 }
