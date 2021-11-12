@@ -152,7 +152,7 @@ void* tput(void* argp){
 void* tsearch(void* argp){
   char* personname = (char*) argp;
   int i = 1;
-  while (i <100){
+  while (i < 100){
     //sleep(2);
     //printf("in ti tsearch: %d\n", i);
     person_t* found;
@@ -199,7 +199,7 @@ void* tremove(void* argp){
 				printf("mikaela count: %d\n", mikaela);  
 			}               
 			//printf("printing resulting shared hash after removal of %s: \n", personname);
-			lhapply(sharedhash, print_person);
+			//			lhapply(sharedhash, print_person);
 			delete_person(removed);
 		}
 		//delete_person(removed); 
@@ -219,6 +219,7 @@ int main(){
   createThread(&t1, tput, "zach");
   createThread(&t2, tput, "foster");
   createThread(&t3, tput, "mikaela");
+ 
 	
   if(pthread_join(t1, NULL)!=0){
 		exit(EXIT_FAILURE);
@@ -243,12 +244,28 @@ int main(){
 	
 	lhapply(sharedhash, print_person);
 	
-	
-	tremove("zach");
-	tremove("foster");
-	tremove("mikaela");
-	
+	createThread(&t4, tsearch, "zach");                                                                                                                                                               
+  createThread(&t5, tsearch, "mikaela");
 		
+	if(pthread_join(t4, NULL)!=0){                                                                                                                                                                    
+    exit(EXIT_FAILURE);                                                                                                                                                                             
+  }                                                                                                                                                                                                 
+  else{                                                                                                                                                                                             
+    printf("t4 terminated\n");                                                                                                                                                                      
+  }
+
+	if(pthread_join(t5, NULL)!=0){                                                                                                                                                                    
+    exit(EXIT_FAILURE);                                                                                                                                                                             
+  }                                                                                                                                                                                                 
+  else{                                                                                                                                                                                             
+    printf("t4 terminated\n");                                                                                                                                                                      
+  }
+
+	tremove("zach");                                                                                                                                                                                  
+  tremove("foster");                                                                                                                                                                                
+  tremove("mikaela");
+
+	
 	printf("# of puts: %d\n", numberofPuts);
 	printf("zach count: %d, foster count: %d, mikaela count: %d\n", zach, foster, mikaela);
 	lhapply(sharedhash, delete_person);
