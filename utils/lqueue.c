@@ -22,14 +22,14 @@ pthread_mutex_t m;
 
 void unlockMutex(){
 	pthread_mutex_unlock(&m);
-	printf("queue mutex %p unlocked\n", (void*) &m);
+	printf("queue mutex %p unlocked\n\n", (void*) &m);
 	//fflush(stdout);
 	//sleep(3);
 }
 
 void lockMutex(){
 	pthread_mutex_lock(&m);
-	printf("queue mutex %p locked\n\n", (void*) &m);
+	printf("queue mutex %p locked\n", (void*) &m);
 	//	fflush(stdout);
 	//sleep(3);
 }

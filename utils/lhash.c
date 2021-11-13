@@ -25,7 +25,7 @@ pthread_mutex_t hashm;
 
 
 void unlockhashMutex(){
- 	printf("hash mutex %p unlocked\n", (void*)&hashm);
+ 	printf("hash mutex %p unlocked\n\n", (void*)&hashm);
   pthread_mutex_unlock(&hashm);
 }
 

@@ -130,7 +130,7 @@ void* tput(void* argp){
   char* personname = (char*) argp;
 
   int i = 0;
-  while (i < 100){
+
 		person_t* person;
     //sleep(4);
     person = make_person(personname, 20, 2023, 500);
@@ -140,10 +140,10 @@ void* tput(void* argp){
     lhput(sharedhash, (void*) person, personname, strlen(personname)); 
 		//    printf("printing hash...\n");
     //lhapply(sharedhash, print_person);
-    i++;
+
 		numberofPuts++;
 
-  }
+
   return NULL;
 }
 
@@ -152,7 +152,7 @@ void* tput(void* argp){
 void* tsearch(void* argp){
   char* personname = (char*) argp;
   int i = 1;
-  while (i < 100){
+
     //sleep(2);
     //printf("in ti tsearch: %d\n", i);
     person_t* found;
@@ -166,9 +166,10 @@ void* tsearch(void* argp){
       printf("found person in shared hash: \n");
       print_person((void*)found);
     }
-    i++;
+
+
 		
-  }
+
   return NULL;
 }
 
@@ -177,7 +178,7 @@ void* tremove(void* argp){
   printf("removing person named %s from the shared hash..\n", personname);
   person_t* removed;
 	int i = 0;
-	while (i < 150){
+
 		removed = (person_t*) lhremove(sharedhash, searchfn, personname, strlen(personname));
 		if (removed == NULL){
 			printf("could not find and remove person named %s in shared hash\n", personname);
@@ -203,8 +204,8 @@ void* tremove(void* argp){
 			delete_person(removed);
 		}
 		//delete_person(removed); 
-		i++;
-	}
+
+
   return NULL;
 }
 
@@ -216,6 +217,60 @@ int main(){
   pthread_t t5 = 0;
 
   sharedhash = lhopen(HASHSIZE);
+	int currentThread = 1;                                                                                                                                                             
+  int numberofThreads = 82;                                                                                                                                                          
+  pthread_t threads[numberofThreads];                                                                                                                                               
+                                                                                                                                                                                    
+  while (currentThread <= numberofThreads){                                                                                                                                          
+    createThread(&threads[currentThread], tput, "zach");                                                                                                                             
+    currentThread++;
+
+		createThread(&threads[currentThread], tput, "foster");
+		currentThread++; 
+  }                                                                                                                                                                                 
+                                                                                                                                                                                    
+  //update currentThread                                                                                                                                                            
+                                                                                                                                                                                    
+  currentThread = 1;                                                                                                                                                               
+                                                                                                                                                                                     
+  // join threads                                                                                                                                                                   
+                                                                                                                                                                                     
+  while(currentThread <= numberofThreads){                                                                                                                                          
+                                                                                                                                                                                   
+    if(pthread_join(threads[currentThread], NULL)!=0){                                                                                                                                                                                                                                                                                                                 
+      exit(EXIT_FAILURE);                                                                                                                                                           
+                                                                                                                                                                                    
+  }                                                                                                                                                                                 
+                                                                                                                                                                                    
+    else{                                                                                                                                                                           
+                                                                                                                                                                                    
+      printf("thread %d terminated\n", currentThread);                                                                                                                              
+                                                                                                                                                                                    
+    }                                                                                                                                                                               
+    currentThread++;
+  }
+
+	currentThread = 1;
+	while(currentThread <= numberofThreads){
+		createThread(&threads[currentThread], tremove, "zach");
+		currentThread++;
+		createThread(&threads[currentThread], tremove, "foster");
+		currentThread++;
+
+	}
+
+	currentThread =1;
+	while(currentThread <= numberofThreads){
+		if(pthread_join(threads[currentThread], NULL)!=0){
+			exit(EXIT_FAILURE);
+		}
+		else{
+			printf("thread %d terminated\n", currentThread);
+		}
+		currentThread++;
+	}
+	
+	/*
   createThread(&t1, tput, "zach");
   createThread(&t2, tput, "foster");
   createThread(&t3, tput, "mikaela");
@@ -264,6 +319,8 @@ int main(){
 	tremove("zach");                                                                                                                                                                                  
   tremove("foster");                                                                                                                                                                                
   tremove("mikaela");
+
+	*/
 
 	
 	printf("# of puts: %d\n", numberofPuts);
