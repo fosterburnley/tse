@@ -31,7 +31,7 @@ int totalcount = 0;
 int totalhash = 0;
 hashtable_t* sharedindex;
 int sharedID;
-pthread_mutex_t m; 
+pthread_mutex_t intm; 
 
 
 
@@ -45,7 +45,15 @@ typedef struct countstruct{
 
 } count_i;
 
-
+void unlockintMutex(){                                                                                                                                                                        
+  printf("mutex %p unlocked\n", (void*)&intm);                                                                                                                                               
+  pthread_mutex_unlock(&intm);                                                                                                                                                                  
+}                                                                                                                                                                                              
+                                                                                                                                                                                               
+void lockintMutex(){                                                                                                                                                                          
+  printf("mutex %p locked\n", (void*)&intm);                                                                                                                                                  
+  pthread_mutex_lock(&intm);                                                                                                                                                                     
+}    
 
 /*
  *search for wordqueue struct using word as key
@@ -176,21 +184,23 @@ void* changeSharedID(void* argc){
 	//	indexPages(argc);
   int thisID;
 	
-	lockMutex(&m);
+	//	lockintMutex();
 	sharedID++;
 	thisID = sharedID;
 	printf("incrementing sharedID to %d\n", sharedID);
 	// 	indexPages(argc);
-	unlockMutex(&m);
+	unlockintMutex();
 	
 	char* pagedir = (char*) argc;
+	printf("running index over ID: %d\n", thisID);
 	indexPages(thisID, pagedir);
-	printf("running index over ID: %d", thisID);
+	printf("finished running index over ID: %d\n", thisID);  
+
 	return NULL;
 
 }
  
-void* indexPages(const int thisID,  char* pagedir){
+void* indexPages(int thisID,  char* pagedir){
 	//	char* pagedir = (char*) pagedir_v;
 	// 	sleep(3);
 	//lockMutex(&m);
@@ -223,7 +233,7 @@ void* indexPages(const int thisID,  char* pagedir){
 		doccount_i* doccount;
 		
 		if (NormalizeWord(word) != 1){
-				printf("current word: %s\n", word);
+			printf("current word for id %d: %s\n", thisID, word);
 				//sleep(3);
 			wqueue_i* foundwq = (wqueue_i*)(lhsearch(sharedindex, wqsearchfn, word, strlen(word)));
 			//printf("test");
@@ -302,7 +312,7 @@ void* indexPages(const int thisID,  char* pagedir){
 	//printf("printing hash... \n");
  	//happly(sharedindex, print_hash);
 	
-	//printf("total count %d\n", totalcount);
+
 	
 	//	indexsave(hword, filename, pagedir);
 	//printf("loading indexnm...");
@@ -337,36 +347,44 @@ void* indexPages(const int thisID,  char* pagedir){
 }
 		
 
-int main(){
-	//int main(int argc, char *argv[]){
-	/*
+//int main(){
+	int main(int argc, char *argv[]){
+	
 	if (argc < 4){
 		printf("usage error: <pagedir> <indexnm> <number of threads>\n");
 		exit(EXIT_FAILURE);
 	}
-	*/
+	
   // initialize shared i = 0
 	sharedID = 0;
 	sharedindex = lhopen(HASHS); 
-
-	pthread_t t1 = 0;                                                                                                                                                                           
-  pthread_t t2 = 0;                                                                                                                                                                           
-  pthread_t t3 = 0;
-
-	/*
+	
 	int numberofThreads = atoi(argv[3]);
 	char* pagedir = argv[1];
-	char* indexnm = argv[2];
-	
-	createThread(&t1, indexPages, pagedir);
-  createThread(&t2, indexPages, pagedir);                                                                                                                                                 
-  createThread(&t3, indexPages, pagedir);                                                                                                                                                 
-	*/
+	char* filename = argv[2];
 
-	createThread(&t1, changeSharedID, "pages-depth3");                                                                                                                                          
-  createThread(&t2, changeSharedID, "pages-depth3");                                                                                                                                              
-  //createThread(&t3, indexPages,"pages-depth3");
+	pthread_t threads[numberofThreads];
 	
+	int currentThread = 1;
+	// create threads
+	while (currentThread <= numberofThreads){
+		createThread(&threads[currentThread], changeSharedID, pagedir);
+		currentThread++;
+	}
+	//update currentThread
+	currentThread = 1; 
+	// join threads
+	while(currentThread <= numberofThreads){
+		if(pthread_join(threads[currentThread], NULL)!=0){                                                                                                                                        
+			exit(EXIT_FAILURE);                                                                                                                                                                     
+  }                                                                                                                                                                                           
+		else{                                                                                                                                                                                    
+			printf("thread %d terminated\n", currentThread);                                                                                                                                      
+		}   
+		currentThread++;
+	}
+	/*	
+		
 	if(pthread_join(t1, NULL)!=0){                                                                                                                                                            
     exit(EXIT_FAILURE);                                                                                                                                                                       
   }                                                                                                                                                                                           
@@ -380,19 +398,22 @@ int main(){
   else{                                                                                                                                                                                       
     printf("t2 terminated\n");                                                                                                                                                                
   }                                                                                                                                                                                           
-  /*                                                                                                                                                                                           
+                                                                                                                                                                                             
   if(pthread_join(t3, NULL)!=0){                                                                                                                                                              
     exit(EXIT_FAILURE);                                                                                                                                                                       
   }                                                                                                                                                                                           
   else{                                                                                                                                                                                       
     printf("t3 terminated\n");                                                                                                                                                                
   }
-	*/
-	
-	lhapply(sharedindex, print_hash);
-	indexsave(sharedindex, "lindexnm2", "pages-depth3");
+	*/	
+
+	//	lhapply(sharedindex, print_hash);
+	pthread_mutex_destroy(&intm); 
+	printf("total count %d\n", totalcount);	
+	indexsave(sharedindex, filename, pagedir);
 	lhapply(sharedindex, delete_wordqueue);   
-	lhclose(sharedindex); 
+	lhclose(sharedindex);
+
 	
 	exit(EXIT_SUCCESS);
 }

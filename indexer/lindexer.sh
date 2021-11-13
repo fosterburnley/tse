@@ -1,3 +1,3 @@
 #!/bin/bash
 
-lindexer pages-depth3 indexnm1 3
+lindexer pages-depth3 lindexnm2 2

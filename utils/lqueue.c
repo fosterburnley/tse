@@ -1,4 +1,13 @@
-
+/* lqueue.c                                                                                                                                                                               
+ *                                                                                                                                                                                             
+ *                                                                                                                                                                                             
+ * Author: Zachary J. Wong                                                                                                                                                                     
+ * Created: Sun Oct 24 13:34:00 2021 (-0400)                                                                                                                                                   
+ * Version:                                                                                                                                                                                    
+ *                                                                                                                                                                                             
+ * Description:                                                                                                                                                                                
+ *                                                                                                                                                                                             
+ */   
 
 
 #include <stdint.h>
@@ -10,21 +19,21 @@
 #include <unistd.h>  
 
 pthread_mutex_t m;
-/*
+
 void unlockMutex(){
 	pthread_mutex_unlock(&m);
-	//printf("mutex %p unlocked\n", (void*) m);
+	printf("queue mutex %p unlocked\n", (void*) &m);
 	//fflush(stdout);
 	//sleep(3);
 }
 
 void lockMutex(){
 	pthread_mutex_lock(&m);
-	//printf("mutex %p locked\n\n", (void*) m);
+	printf("queue mutex %p locked\n\n", (void*) &m);
 	//	fflush(stdout);
 	//sleep(3);
 }
-*/
+
 /* create an empty queue 
  * # 
  */
@@ -35,7 +44,7 @@ queue_t* lqopen(){
 		return NULL;
 	}
 	lockMutex();
-	printf("opening queue..\n");
+	printf("opening locked queue..\n");
 	queue_t* queue = qopen();
 	unlockMutex();
 	return queue;

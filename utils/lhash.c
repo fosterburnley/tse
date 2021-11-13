@@ -1,4 +1,13 @@
-
+/* lhash.c ---                                                                                                                                                                               
+ *                                                                                                                                                                                             
+ *                                                                                                                                                                                             
+ * Author: Zachary J. Wong                                                                                                                                                                     
+ * Created: Sun Oct 24 13:34:00 2021 (-0400)                                                                                                                                                   
+ * Version:                                                                                                                                                                                    
+ *                                                                                                                                                                                             
+ * Description:                                                                                                                                                                                
+ *                                                                                                                                                                                             
+ */   
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,71 +21,71 @@
 #define MAXCHAR 100
 //#define MAXARR 2000
 
-pthread_mutex_t m;  
+pthread_mutex_t hashm;  
 
 
-void unlockMutex(){
-	//	printf("mutex %p unlocked\n", (void*)&m);
-  pthread_mutex_unlock(&m);
+void unlockhashMutex(){
+ 	printf("hash mutex %p unlocked\n", (void*)&hashm);
+  pthread_mutex_unlock(&hashm);
 }
 
-void lockMutex(){
-	//printf("mutex %p locked\n", (void*)&m); 
-  pthread_mutex_lock(&m);
+void lockhashMutex(){
+	printf("hash mutex %p locked\n", (void*)&hashm); 
+  pthread_mutex_lock(&hashm);
 }
 
 
 // hopen -- opens a hash table with the initial size hsize
 hashtable_t* lhopen(uint32_t hsize){
   
-	if ((pthread_mutex_init(&m, NULL) != 0)){
+	if ((pthread_mutex_init(&hashm, NULL) != 0)){
 		printf("initialization of mutex for hash failed\n"); 
 		return NULL;
 	}
-	lockMutex();
+	lockhashMutex();
   printf("opening hashtable...\n");
   hashtable_t* hash = hopen(hsize);
-  unlockMutex();
+  unlockhashMutex();
   return hash;
 }
 
 
 // hclose -- closes hash table
 void lhclose(hashtable_t *htp){
-  lockMutex();
+  lockhashMutex();
   printf("closing hashtable...\n");
   hclose(htp);
-  unlockMutex();
-	pthread_mutex_destroy(&m);
+  unlockhashMutex();
+	pthread_mutex_destroy(&hashm);
 }
 
 // hput -- puts an entry into a hash table under designated key
 // returns 0 for sucess; nonzero otherwise
 int32_t lhput(hashtable_t *htp, void *ep, const char *key, int keylen){
-  lockMutex();
+  lockhashMutex();
   hput(htp, ep, key, keylen);
-  unlockMutex();
+  unlockhashMutex();
   return 0; 
 }
 
 // happly -- applies a function to every entry in the hash table
 void lhapply(hashtable_t *htp, void(*fn)(void*ep)){
-  lockMutex();
+  lockhashMutex();
   happly(htp, fn);
-  unlockMutex();
+  unlockhashMutex();
 }
 
 void* lhsearch(hashtable_t *htp, bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen){
-  lockMutex();
+  lockhashMutex();
   printf("searching for element in hashtable...\n");
   void* found = hsearch(htp, searchfn, key, keylen);
-  unlockMutex();
+  unlockhashMutex();
   return found;
 }
 
 void* lhremove(hashtable_t *htp, bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen){
-  lockMutex();
+  lockhashMutex();
   void* removed = hremove(htp, searchfn, key, keylen);
-  unlockMutex();
+  unlockhashMutex();
   return removed;
 }
