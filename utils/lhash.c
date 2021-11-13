@@ -10,18 +10,21 @@
 #include <unistd.h>
 
 #define MAXCHAR 100
-#define MAXARR 2000
+//#define MAXARR 2000
 
 pthread_mutex_t m;  
 
 
 void unlockMutex(){
+	//	printf("mutex %p unlocked\n", (void*)&m);
   pthread_mutex_unlock(&m);
 }
 
 void lockMutex(){
+	//printf("mutex %p locked\n", (void*)&m); 
   pthread_mutex_lock(&m);
 }
+
 
 // hopen -- opens a hash table with the initial size hsize
 hashtable_t* lhopen(uint32_t hsize){

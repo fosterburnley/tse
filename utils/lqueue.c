@@ -10,7 +10,7 @@
 #include <unistd.h>  
 
 pthread_mutex_t m;
-
+/*
 void unlockMutex(){
 	pthread_mutex_unlock(&m);
 	//printf("mutex %p unlocked\n", (void*) m);
@@ -24,7 +24,7 @@ void lockMutex(){
 	//	fflush(stdout);
 	//sleep(3);
 }
-
+*/
 /* create an empty queue 
  * # 
  */
