@@ -31,7 +31,7 @@ int totalcount = 0;
 int totalhash = 0;
 hashtable_t* sharedindex;
 int sharedID;
-pthread_mutex_t intm; 
+pthread_mutex_t m; 
 
 
 
@@ -45,15 +45,7 @@ typedef struct countstruct{
 
 } count_i;
 
-void unlockintMutex(){                                                                                                                                                                        
-  printf("mutex %p unlocked\n", (void*)&intm);                                                                                                                                               
-  pthread_mutex_unlock(&intm);                                                                                                                                                                  
-}                                                                                                                                                                                              
-                                                                                                                                                                                               
-void lockintMutex(){                                                                                                                                                                          
-  printf("mutex %p locked\n", (void*)&intm);                                                                                                                                                  
-  pthread_mutex_lock(&intm);                                                                                                                                                                     
-}    
+
 
 /*
  *search for wordqueue struct using word as key
@@ -184,23 +176,21 @@ void* changeSharedID(void* argc){
 	//	indexPages(argc);
   int thisID;
 	
-	//	lockintMutex();
+	lockMutex(&m);
 	sharedID++;
 	thisID = sharedID;
 	printf("incrementing sharedID to %d\n", sharedID);
 	// 	indexPages(argc);
-	unlockintMutex();
+	unlockMutex(&m);
 	
 	char* pagedir = (char*) argc;
-	printf("running index over ID: %d\n", thisID);
 	indexPages(thisID, pagedir);
-	printf("finished running index over ID: %d\n", thisID);  
-
+	printf("running index over ID: %d", thisID);
 	return NULL;
 
 }
  
-void* indexPages(int thisID,  char* pagedir){
+void* indexPages(const int thisID,  char* pagedir){
 	//	char* pagedir = (char*) pagedir_v;
 	// 	sleep(3);
 	//lockMutex(&m);
@@ -233,7 +223,7 @@ void* indexPages(int thisID,  char* pagedir){
 		doccount_i* doccount;
 		
 		if (NormalizeWord(word) != 1){
-			printf("current word for id %d: %s\n", thisID, word);
+				printf("current word: %s\n", word);
 				//sleep(3);
 			wqueue_i* foundwq = (wqueue_i*)(lhsearch(sharedindex, wqsearchfn, word, strlen(word)));
 			//printf("test");
@@ -312,7 +302,7 @@ void* indexPages(int thisID,  char* pagedir){
 	//printf("printing hash... \n");
  	//happly(sharedindex, print_hash);
 	
-
+	//printf("total count %d\n", totalcount);
 	
 	//	indexsave(hword, filename, pagedir);
 	//printf("loading indexnm...");
@@ -348,7 +338,7 @@ void* indexPages(int thisID,  char* pagedir){
 		
 
 //int main(){
-	int main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
 	
 	if (argc < 4){
 		printf("usage error: <pagedir> <indexnm> <number of threads>\n");
@@ -358,62 +348,48 @@ void* indexPages(int thisID,  char* pagedir){
   // initialize shared i = 0
 	sharedID = 0;
 	sharedindex = lhopen(HASHS); 
+
+
 	
 	int numberofThreads = atoi(argv[3]);
 	char* pagedir = argv[1];
 	char* filename = argv[2];
 
 	pthread_t threads[numberofThreads];
-	
 	int currentThread = 1;
-	// create threads
-	while (currentThread <= numberofThreads){
+
+	for (int i = 0; i < numberofThreads; i++){
 		createThread(&threads[currentThread], changeSharedID, pagedir);
 		currentThread++;
 	}
-	//update currentThread
-	currentThread = 1; 
-	// join threads
-	while(currentThread <= numberofThreads){
-		if(pthread_join(threads[currentThread], NULL)!=0){                                                                                                                                        
-			exit(EXIT_FAILURE);                                                                                                                                                                     
-  }                                                                                                                                                                                           
-		else{                                                                                                                                                                                    
-			printf("thread %d terminated\n", currentThread);                                                                                                                                      
-		}   
-		currentThread++;
+
+	currentThread = 1;
+
+	for (int i = 0; i < numberofThreads; i++){
+		 if(pthread_join(threads[currentThread], NULL)!=0){                                                                                                                                                                                                                                                                                                                                      
+    exit(EXIT_FAILURE);                                                                                                                                                              
+		 }                                                                                                                                                                                 		 else{                                                                                                                                                                         			 
+			 printf("currentThread %d terminated\n", currentThread);                                                                                                                                                       
+			 
+		 }    
+		 currentThread++;	 
 	}
-	/*	
-		
-	if(pthread_join(t1, NULL)!=0){                                                                                                                                                            
-    exit(EXIT_FAILURE);                                                                                                                                                                       
-  }                                                                                                                                                                                           
-  else{                                                                                                                                                                                       
-    printf("t1 terminated\n");                                                                                                                                                                
-  }                                                                                                                                                                                           
-                                                                                                                                                                                            
-  if(pthread_join(t2, NULL)!=0){                                                                                                                                                              
-    exit(EXIT_FAILURE);                                                                                                                                                                       
-  }                                                                                                                                                                                           
-  else{                                                                                                                                                                                       
-    printf("t2 terminated\n");                                                                                                                                                                
-  }                                                                                                                                                                                           
-                                                                                                                                                                                             
+
+  /*                                                                                                                                                                                           
   if(pthread_join(t3, NULL)!=0){                                                                                                                                                              
     exit(EXIT_FAILURE);                                                                                                                                                                       
   }                                                                                                                                                                                           
   else{                                                                                                                                                                                       
     printf("t3 terminated\n");                                                                                                                                                                
   }
-	*/	
-
+	*/
+	
+	
 	//	lhapply(sharedindex, print_hash);
-	pthread_mutex_destroy(&intm); 
-	printf("total count %d\n", totalcount);	
+	printf("totalcount: %d\n", totalcount);
 	indexsave(sharedindex, filename, pagedir);
 	lhapply(sharedindex, delete_wordqueue);   
-	lhclose(sharedindex);
-
-	
+	lhclose(sharedindex); 
+	pthread_mutex_destroy(&m);
 	exit(EXIT_SUCCESS);
 }

@@ -18,7 +18,7 @@ additional 5 1
 images 5 1 
 wide 3 1 
 richard 5 3 
-resources 3 1 2 1 1 1 4 1 5 6 
+resources 1 1 2 1 3 1 4 1 5 6 
 using 4 1 5 6 
 nicer 5 1 
 replicate 4 1 
@@ -34,7 +34,7 @@ program 1 1 4 1 5 1
 engine 1 1 5 1 
 ignore 4 1 
 others 5 3 
-modules 3 2 2 1 
+modules 2 1 3 2 
 tells 4 1 
 stevens 5 1 
 gnu 5 2 
@@ -61,10 +61,10 @@ clean 4 1
 distributed 5 1 
 less 5 1 
 programs 5 1 
-stephen 3 1 2 1 1 1 4 1 5 1 
+stephen 1 1 2 1 3 1 4 1 5 1 
 them 5 2 
 began 5 1 
-are 3 1 1 2 4 1 5 12 
+are 1 2 3 1 4 1 5 12 
 there 5 7 
 fifth 5 1 
 flavors 5 2 
@@ -75,12 +75,12 @@ optional 4 1
 linux 4 1 5 10 
 favorite 5 1 
 number 5 2 
-testing 3 3 1 1 4 2 
-course 3 1 2 1 1 5 4 1 5 5 
+testing 1 1 3 3 4 2 
+course 1 5 2 1 3 1 4 1 5 5 
 walter 4 1 
 skip 5 1 
 henney 4 1 5 1 
-this 3 2 2 3 1 4 4 9 5 9 
+this 1 4 2 3 3 2 4 9 5 9 
 week 4 13 
 reimplemented 5 1 
 subset 4 1 
@@ -101,7 +101,7 @@ thus 5 1
 spectrum 4 1 
 test 1 1 
 print 5 1 
-querier 3 1 2 1 
+querier 2 1 3 1 
 owned 5 1 
 variables 5 1 
 available 3 1 5 3 
@@ -118,14 +118,14 @@ barnes 5 1
 steele 5 2 
 lower 5 1 
 commands 4 1 5 3 
-follow 2 1 1 1 5 1 
-taylor 3 1 2 1 1 1 4 1 5 1 
+follow 1 1 2 1 5 1 
+taylor 1 1 2 1 3 1 4 1 5 1 
 making 5 1 
 slick 5 1 
 perl 5 1 
 man 5 4 
 gitignore 5 1 
-palmer 3 1 2 1 1 1 4 1 5 2 
+palmer 1 1 2 1 3 1 4 1 5 2 
 plain 5 1 
 etc 5 1 
 toomey 4 1 
@@ -134,14 +134,14 @@ emacs 5 3
 window 5 2 
 basics 4 1 
 braithwaite 4 1 
-last 3 1 2 1 1 1 4 1 5 1 
+last 1 1 2 1 3 1 4 1 5 1 
 raymond 4 1 
 lets 5 1 
 appear 5 1 
 scripting 5 2 
 own 1 1 5 1 
 servers 5 2 
-for 2 1 1 2 4 1 5 31 
+for 1 2 2 1 4 1 5 31 
 sommerlad 4 1 
 link 5 2 
 covering 5 1 
@@ -151,7 +151,7 @@ nor 4 1
 farrow 4 1 
 extension 5 1 
 skim 4 1 
-assignments 2 2 1 1 4 3 
+assignments 1 1 2 2 4 3 
 xquartz 5 3 
 gui 5 1 
 arasu 4 3 
@@ -172,7 +172,7 @@ highly 5 4
 interactive 5 2 
 fast 5 1 
 conflicts 5 1 
-programming 3 1 1 2 4 3 5 17 
+programming 1 2 3 1 4 3 5 17 
 take 4 1 
 nutshell 5 1 
 weeks 1 1 
@@ -184,7 +184,7 @@ url 5 1
 skimming 4 1 
 brady 5 1 
 linker 4 1 
-crawler 3 1 2 1 
+crawler 2 1 3 1 
 freeman 4 1 
 edit 5 1 
 gitlab 3 1 5 4 
@@ -196,7 +196,7 @@ variants 5 2
 bright 4 1 
 beginning 5 1 
 pointers 3 1 
-balkcom 3 1 2 1 1 1 4 1 5 1 
+balkcom 1 1 2 1 3 1 4 1 5 1 
 installation 5 1 
 utility 5 1 
 found 5 2 
@@ -207,8 +207,8 @@ short 5 3
 toolkit 5 1 
 very 1 1 5 6 
 time 5 1 
-based 3 1 2 1 1 1 4 1 5 2 
-upon 3 1 2 1 1 1 4 1 5 1 
+based 1 1 2 1 3 1 4 1 5 2 
+upon 1 1 2 1 3 1 4 1 5 1 
 lecture 4 12 
 mostly 5 1 
 bronson 5 1 
@@ -244,7 +244,7 @@ control 5 2
 maintainable 1 1 
 originally 5 2 
 allow 5 2 
-professors 3 1 2 1 1 1 4 1 5 1 
+professors 1 1 2 1 3 1 4 1 5 1 
 oldie 5 1 
 vim 5 2 
 embedded 5 1 
@@ -254,17 +254,17 @@ recognizes 5 1
 kevlin 4 1 5 1 
 uses 5 1 
 gtk 5 3 
-design 3 2 1 4 4 1 5 1 
+design 1 4 3 2 4 1 5 1 
 networking 3 1 4 1 
 well 4 1 5 2 
 published 5 1 
 processes 5 1 
 mastering 5 1 
-designed 3 1 2 1 1 1 4 1 5 1 
+designed 1 1 2 1 3 1 4 1 5 1 
 management 1 1 
 early 5 1 
 who 4 1 
-and 3 11 2 2 1 7 4 14 5 46 
+and 1 7 2 2 3 11 4 14 5 46 
 development 1 1 
 sleep 4 1 
 malloc 3 2 
@@ -278,7 +278,7 @@ install 5 1
 issues 5 1 
 pocket 5 1 
 read 5 1 
-the 3 4 2 2 1 5 4 19 5 34 
+the 1 5 2 2 3 4 4 19 5 34 
 berkeley 4 1 
 mount 4 1 
 log 5 1 
@@ -299,7 +299,7 @@ supplied 5 1
 markoff 5 1 
 headings 5 1 
 try 5 1 
-with 3 2 1 2 4 7 5 7 
+with 1 2 3 2 4 7 5 7 
 previewing 5 1 
 most 5 2 
 including 5 2 
@@ -313,13 +313,13 @@ useful 5 2
 operating 5 1 
 gary 5 1 
 local 5 2 
-bash 3 3 2 1 5 9 
+bash 2 1 3 3 5 9 
 professional 4 1 5 1 
 foundation 4 1 
 process 1 1 
 tse 2 3 4 1 
 error 4 1 
-please 2 2 1 1 5 1 
+please 1 1 2 2 5 1 
 legacy 2 1 
 excellent 5 3 
 simple 5 4 
@@ -333,7 +333,7 @@ chacon 5 1
 bookstores 5 2 
 prentice 5 1 
 searching 3 1 4 4 
-labs 3 1 2 3 1 1 4 2 5 1 
+labs 1 1 2 3 3 1 4 2 5 1 
 prevent 4 1 
 will 1 2 4 1 5 4 
 giovanni 4 1 
@@ -344,7 +344,7 @@ json 5 1
 your 1 2 4 3 5 4 
 hunt 5 1 
 quite 5 1 
-coding 2 1 1 3 4 3 
+coding 1 3 2 1 4 3 
 life 4 1 
 rendering 5 1 
 andrew 4 1 5 1 
@@ -357,7 +357,7 @@ ieee 4 1
 allocation 4 1 
 new 5 1 
 across 5 1 
-deeply 3 1 2 1 1 1 4 1 5 1 
+deeply 1 1 2 1 3 1 4 1 5 1 
 choose 4 1 
 art 4 1 
 common 5 2 
@@ -369,7 +369,7 @@ algorithm 4 1
 peter 4 1 
 longer 5 1 
 popular 5 4 
-these 3 1 2 1 1 1 4 1 5 2 
+these 1 1 2 1 3 1 4 1 5 2 
 birth 4 1 
 pete 4 1 
 ritchie 5 1 
@@ -381,18 +381,18 @@ culture 4 1
 magical 4 1 
 editors 5 3 
 understandable 1 1 
-bugs 3 1 4 1 
 guide 1 1 5 5 
-stdio 3 1 
-indebted 3 1 2 1 1 1 4 1 5 1 
+bugs 3 1 4 1 
 overview 1 2 
+indebted 1 1 2 1 3 1 4 1 5 1 
+stdio 3 1 
 dan 4 1 
 that 1 1 4 1 5 7 
 jekyll 5 1 
 identified 5 1 
 advantage 4 1 
 choice 5 1 
-engs 3 2 2 2 1 3 4 2 5 2 
+engs 1 3 2 2 3 2 4 2 5 2 
 extras 4 6 
 more 5 1 
 banahan 5 1 
@@ -413,14 +413,14 @@ amp 1 1 5 3
 bob 4 1 
 licensed 5 1 
 applications 5 2 
-zhou 3 1 2 1 1 1 4 1 5 1 
-click 2 1 
+zhou 1 1 2 1 3 1 4 1 5 1 
 you 1 4 5 10 
+click 2 1 
 make 5 1 
-page 3 1 2 2 1 1 4 1 5 4 
+page 1 1 2 2 3 1 4 1 5 4 
 finish 4 1 
 until 5 1 
-reading 3 1 2 1 1 1 4 3 5 1 
+reading 1 1 2 1 3 1 4 3 5 1 
 invaluable 5 1 
 usenet 5 1 
 login 4 1 
@@ -443,7 +443,7 @@ tutorial 5 8
 dynamic 5 1 
 snippets 5 1 
 markdown 5 13 
-indexer 3 1 2 1 4 1 
+indexer 2 1 3 1 4 1 
 provides 4 1 5 1 
 ssh 5 2 
 threads 5 1 
@@ -451,12 +451,12 @@ than 5 2
 better 5 1 
 traditional 5 1 
 via 5 1 
-updated 3 1 2 1 1 1 4 1 5 1 
+updated 1 1 2 1 3 1 4 1 5 1 
 really 5 2 
 admins 5 1 
 thomas 5 1 
-version 3 1 2 1 1 1 4 1 5 4 
-style 2 1 1 2 4 2 
+style 1 2 2 1 4 2 
+version 1 1 2 1 3 1 4 1 5 4 
 fuzz 3 1 
 expressions 3 1 
 canvas 2 1 
@@ -500,8 +500,8 @@ variations 5 1
 file 5 2 
 strings 3 1 
 personal 5 1 
-campbell 3 1 2 1 1 1 4 1 5 1 
 team 1 2 
+campbell 1 1 2 1 3 1 4 1 5 1 
 geeks 5 1 
 learn 1 3 4 2 5 3 
 explainshell 5 1 
@@ -528,9 +528,9 @@ command 4 1 5 2
 declan 5 1 
 build 1 2 4 1 5 1 
 non 5 1 
-notes 3 3 2 1 1 1 4 7 5 1 
+notes 1 1 2 1 3 3 4 7 5 1 
 employ 5 1 
-college 3 1 2 1 1 1 4 1 5 1 
+college 1 1 2 1 3 1 4 1 5 1 
 extremely 5 1 
 amazon 5 1 
 cannot 4 1 
@@ -547,16 +547,16 @@ links 5 2
 plus 5 1 
 why 5 1 
 readable 5 1 
-kotz 3 1 2 1 1 1 4 1 5 1 
+kotz 1 1 2 1 3 1 4 1 5 1 
 masters 5 1 
 documentation 1 1 5 2 
 setting 5 1 
-was 3 1 2 1 1 1 4 1 5 3 
+was 1 1 2 1 3 1 4 1 5 3 
 books 5 4 
 fixes 5 1 
 matthew 5 1 
 either 5 1 
-examples 3 3 2 1 1 1 4 2 5 2 
+examples 1 1 2 1 3 3 4 2 5 2 
 when 5 1 
 many 5 7 
 arnold 5 1 
@@ -586,7 +586,7 @@ com 5 3
 associated 4 6 
 much 5 1 
 automatically 5 1 
-software 3 1 1 3 4 1 5 2 
+software 1 3 3 1 4 1 5 2 
 its 4 1 5 2 
 language 4 2 5 6 
 verbose 4 1 
@@ -609,7 +609,7 @@ lewis 4 1
 fourth 5 1 
 robbins 5 1 
 strange 4 1 
-those 3 1 2 1 1 1 4 1 5 1 
+those 1 1 2 1 3 1 4 1 5 1 
 username 5 1 
 markup 5 1 
 which 5 5 
@@ -617,7 +617,7 @@ years 5 2
 remove 4 1 
 doran 5 1 
 windows 5 1 
-outstanding 3 1 2 1 1 1 4 1 5 1 
+outstanding 1 1 2 1 3 1 4 1 5 1 
 great 5 4 
 anders 4 1 
 suggesting 5 1 
@@ -632,7 +632,7 @@ robinson 4 1
 friends 4 1 
 sure 1 1 
 compiling 5 1 
-dartmouth 3 1 2 1 1 1 4 1 5 3 
+dartmouth 1 1 2 1 3 1 4 1 5 3 
 lectures 4 6 
 share 5 1 
 introduction 3 1 5 3 
@@ -649,15 +649,15 @@ macdown 5 1
 iterators 3 1 
 textbook 5 1 
 stones 5 1 
-git 3 1 1 1 5 8 
+git 1 1 3 1 5 8 
 down 1 1 
 files 5 7 
 pragmatic 5 1 
-debugging 3 1 1 1 4 1 5 1 
+debugging 1 1 3 1 4 1 5 1 
 called 5 2 
 portals 5 1 
 programmer 4 1 5 2 
 baker 5 1 
 ansi 5 1 
 written 5 1 
-educators 3 1 2 1 1 1 4 1 5 1 
+educators 1 1 2 1 3 1 4 1 5 1 

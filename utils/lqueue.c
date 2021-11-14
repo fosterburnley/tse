@@ -1,13 +1,4 @@
-/* lqueue.c                                                                                                                                                                               
- *                                                                                                                                                                                             
- *                                                                                                                                                                                             
- * Author: Zachary J. Wong                                                                                                                                                                     
- * Created: Sun Oct 24 13:34:00 2021 (-0400)                                                                                                                                                   
- * Version:                                                                                                                                                                                    
- *                                                                                                                                                                                             
- * Description:                                                                                                                                                                                
- *                                                                                                                                                                                             
- */   
+
 
 
 #include <stdint.h>
@@ -22,14 +13,14 @@ pthread_mutex_t m;
 
 void unlockMutex(){
 	pthread_mutex_unlock(&m);
-	printf("queue mutex %p unlocked\n", (void*) &m);
+	printf("shared queue mutex %p unlocked\n\n", (void*) &m);
 	//fflush(stdout);
 	//sleep(3);
 }
 
 void lockMutex(){
 	pthread_mutex_lock(&m);
-	printf("queue mutex %p locked\n\n", (void*) &m);
+	printf("shared hash mutex %p locked\n", (void*) &m);
 	//	fflush(stdout);
 	//sleep(3);
 }
@@ -44,7 +35,7 @@ queue_t* lqopen(){
 		return NULL;
 	}
 	lockMutex();
-	printf("opening locked queue..\n");
+	printf("opening shared queue..\n");
 	queue_t* queue = qopen();
 	unlockMutex();
 	return queue;
@@ -54,7 +45,7 @@ queue_t* lqopen(){
 /* deallocate a queue, frees everything in it */
 void lqclose(queue_t *qp){
 	lockMutex();
-	printf("closing queue...\n");
+	printf("closing shared queue...\n");
 	qclose(qp);
 	unlockMutex();
 	pthread_mutex_destroy(&m);
@@ -66,7 +57,7 @@ void lqclose(queue_t *qp){
  */
 int32_t lqput(queue_t *qp, void *elementp){
 	lockMutex();
-	//printf("putting element in queue...\n");
+	printf("putting element in shared queue...\n");
 	//	sleep(5);
 	qput(qp, elementp);
 	unlockMutex();
@@ -77,7 +68,7 @@ int32_t lqput(queue_t *qp, void *elementp){
 /* get the first first element from queue, removing it from the queue */
 void* lqget(queue_t *qp){
 	lockMutex();
-	//printf("getting element in queue...\n");
+	printf("getting element in shared queue...\n");
 	void* result = qget(qp);
 	unlockMutex();
 	return result;
@@ -86,7 +77,7 @@ void* lqget(queue_t *qp){
 /* apply a function to every element of the queue */
 void lqapply(queue_t *qp, void (*fn)(void* elementp)){
 	lockMutex();
-	//printf("applying function to queue...\n");
+	printf("applying function to shared queue...\n");
 	qapply(qp, fn);
 	unlockMutex();
 
@@ -103,7 +94,7 @@ void lqapply(queue_t *qp, void (*fn)(void* elementp)){
  */
 void* lqsearch(queue_t *qp, bool (*searchfn)(void* elementp, const void* keyp), const void* skeyp){
 	lockMutex();
-	printf("searching for element in queue...\n");
+	printf("searching for element in shared queue...\n");
 	void* found = qsearch(qp, searchfn, skeyp);
 	unlockMutex();
 	return found; 
@@ -119,7 +110,7 @@ void* lqsearch(queue_t *qp, bool (*searchfn)(void* elementp, const void* keyp), 
  */
 void* lqremove(queue_t *qp, bool (*searchfn)(void* elementp,const void* keyp), const void* skeyp){
 	lockMutex();
-	//printf("removing element from queue...\n");
+	printf("removing element from shared queue...\n");
 	void* removed = qremove(qp, searchfn, skeyp);
 	unlockMutex();
 	return removed; 

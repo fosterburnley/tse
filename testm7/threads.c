@@ -8,7 +8,6 @@
  * Description: 
  * 
  */
-
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +22,7 @@
 queue_t* sharedqueue;
 //pthread_mutex_t m;
 int threadid = 1;
-
+int numberofPuts= 0;
 int counter = 0;
 
 int zach = 0;
@@ -121,7 +120,7 @@ void *tput(void* argp){
 		//printf("deleting people in queue...\n");
 	
 	//lqapply(sharedqueue, delete_person, &m);
-	
+		numberofPuts++;
 	//printf("printing queue...\n");
 	//lqapply(sharedqueue, print_person, &m);
 		i++;
@@ -201,8 +200,9 @@ void* tsearch(void* argp){
 
 void* tremove(void* argp){
 	int i = 0;
-	while (i < 100){
-		char* personname = (char*) argp;
+	char* personname;
+	while (i < 10500){
+		personname = (char*) argp;
 		printf("removing person named  %s from sharedqueue...\n", personname);
 		person_t* removed;
 		removed  = (person_t*) lqremove(sharedqueue, searchfn, (void*)(personname));
@@ -243,6 +243,12 @@ int main(){
 	pthread_t t3 = 0;
 	pthread_t t4 = 0;
 	pthread_t t5 = 0;
+	pthread_t t6 = 0;
+	pthread_t t7 = 0;
+	pthread_t t8 = 0;
+	pthread_t t9 = 0;
+	pthread_t t10 = 0;
+	
 	//	pthread_mutex_init(&m, NULL);
 
 	//make people
@@ -254,7 +260,15 @@ int main(){
 	// create the threads
 	createThread(&t1, tput, "zach");
 	createThread(&t2, tput, "foster");
-	createThread(&t3, tput, "mikaela"); 
+	createThread(&t3, tput, "mikaela");
+	createThread(&t4, tput, "mikaela");
+	createThread(&t5, tput, "mikaela");
+	createThread(&t6, tput, "mikaela");
+	createThread(&t7, tput, "mikaela");
+	createThread(&t8, tput, "mikaela");
+	createThread(&t9, tput, "mikaela");
+	createThread(&t10, tput, "mikaela");
+	
 	//	createThread(&t3, tsearch, "zach");
 	//createThread(&t4, tsearch, "mikaela");
 	/*
@@ -293,6 +307,66 @@ int main(){
     printf("t3 terminated\n");                                                                                                                  
                                                                                                                                                 
   }
+
+	if(pthread_join(t4, NULL)!=0){                                                                                                                                                  
+    exit(EXIT_FAILURE);                                                                                                                                                              
+  }                                                                                                                                                                                  
+  else{                                                                                                                                                                              
+                                                                                                                                                                                     
+    printf("t4 terminated\n");                                                                                                                                                       
+                                                                                                                                                                                     
+  }
+	if(pthread_join(t5, NULL)!=0){                                                                                                                                                      
+    exit(EXIT_FAILURE);                                                                                                                                                               
+  }                                                                                                                                                                                   
+	else{                                                                                                                                                                               
+		
+    printf("t5 terminated\n");                                                                                                                                                        
+		
+  }
+	if(pthread_join(t6, NULL)!=0){                                                                                                                                                      
+    exit(EXIT_FAILURE);                                                                                                                                                               
+  }                                                                                                                                                                                   
+  else{                                                                                                                                                                               
+		
+    printf("t6 terminated\n");                                                                                                                                                        
+		
+  }
+	if(pthread_join(t7, NULL)!=0){                                                                                                                                                      
+    exit(EXIT_FAILURE);                                                                                                                                                               
+  }                                                                                                                                                                                   
+  else{                                                                                                                                                                               
+		
+    printf("t7 terminated\n");                                                                                                                                                        
+		
+  }
+	if(pthread_join(t8, NULL)!=0){                                                                                                                                                
+    exit(EXIT_FAILURE);                                                                                                                                                              
+  }                                                                                                                                                                                  
+  else{                                                                                                                                                                              
+    
+    printf("t8 terminated\n");                                                                                                                                                       
+    
+  }
+	if(pthread_join(t9, NULL)!=0){                                                                                                                                          
+    exit(EXIT_FAILURE);                                                                                                                                                              
+  }                                                                                                                                                                                  
+  else{                                                                                                                                                                              
+    
+    printf("t9 terminated\n");                                                                                                                                                       
+    
+  }
+	if(pthread_join(t10, NULL)!=0){                                                                                                                                        
+    exit(EXIT_FAILURE);                                                                                                                                                              
+  }                                                                                                                                                                                  
+  else{                                                                                                                                                                              
+    
+    printf("t10 terminated\n");                                                                                                                                                       
+		
+  }   
+	
+	
+	
 	lqapply(sharedqueue, print_person);     
 	//tget();
 	
@@ -301,7 +375,7 @@ int main(){
 	tremove("foster");
 	tremove("mikaela");
 	lqclose(sharedqueue);
-
+	printf("number of puts %d\n", numberofPuts);
 	printf("zach count: %d, foster count: %d, mikaela count: %d\n", zach, foster, mikaela);
 	
 	

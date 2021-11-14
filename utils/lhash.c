@@ -1,13 +1,4 @@
-/* lhash.c ---                                                                                                                                                                               
- *                                                                                                                                                                                             
- *                                                                                                                                                                                             
- * Author: Zachary J. Wong                                                                                                                                                                     
- * Created: Sun Oct 24 13:34:00 2021 (-0400)                                                                                                                                                   
- * Version:                                                                                                                                                                                    
- *                                                                                                                                                                                             
- * Description:                                                                                                                                                                                
- *                                                                                                                                                                                             
- */   
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,29 +12,29 @@
 #define MAXCHAR 100
 //#define MAXARR 2000
 
-pthread_mutex_t hashm;  
+pthread_mutex_t m;  
 
 
 void unlockhashMutex(){
- 	printf("hash mutex %p unlocked\n", (void*)&hashm);
-  pthread_mutex_unlock(&hashm);
+ 	printf("shared hash mutex %p unlocked\n\n", (void*)&m);
+  pthread_mutex_unlock(&m);
 }
 
 void lockhashMutex(){
-	printf("hash mutex %p locked\n", (void*)&hashm); 
-  pthread_mutex_lock(&hashm);
+	printf("shared mutex %p locked\n", (void*)&m); 
+  pthread_mutex_lock(&m);
 }
 
 
 // hopen -- opens a hash table with the initial size hsize
 hashtable_t* lhopen(uint32_t hsize){
   
-	if ((pthread_mutex_init(&hashm, NULL) != 0)){
+	if ((pthread_mutex_init(&m, NULL) != 0)){
 		printf("initialization of mutex for hash failed\n"); 
 		return NULL;
 	}
 	lockhashMutex();
-  printf("opening hashtable...\n");
+  printf("opening shared hashtable...\n");
   hashtable_t* hash = hopen(hsize);
   unlockhashMutex();
   return hash;
@@ -53,10 +44,10 @@ hashtable_t* lhopen(uint32_t hsize){
 // hclose -- closes hash table
 void lhclose(hashtable_t *htp){
   lockhashMutex();
-  printf("closing hashtable...\n");
+  printf("closing shared hashtable...\n");
   hclose(htp);
   unlockhashMutex();
-	pthread_mutex_destroy(&hashm);
+	pthread_mutex_destroy(&m);
 }
 
 // hput -- puts an entry into a hash table under designated key
@@ -77,7 +68,7 @@ void lhapply(hashtable_t *htp, void(*fn)(void*ep)){
 
 void* lhsearch(hashtable_t *htp, bool (*searchfn)(void* elementp, const void* searchkeyp), const char *key, int32_t keylen){
   lockhashMutex();
-  printf("searching for element in hashtable...\n");
+  printf("searching for element in shared hashtable...\n");
   void* found = hsearch(htp, searchfn, key, keylen);
   unlockhashMutex();
   return found;
