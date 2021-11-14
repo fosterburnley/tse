@@ -385,7 +385,7 @@ int main(int argc, char *argv[]){
 	*/
 	
 	
-	//	lhapply(sharedindex, print_hash);
+ 	lhapply(sharedindex, print_hash);
 	printf("totalcount: %d\n", totalcount);
 	indexsave(sharedindex, filename, pagedir);
 	lhapply(sharedindex, delete_wordqueue);   
