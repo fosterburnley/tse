@@ -16,8 +16,9 @@ pthread_mutex_t m;
 
 
 void unlockhashMutex(){
- 	printf("shared hash mutex %p unlocked\n\n", (void*)&m);
+ 	printf("hash mutex %p unlocked\n\n", (void*)&m);
   pthread_mutex_unlock(&m);
+
 }
 
 void lockhashMutex(){

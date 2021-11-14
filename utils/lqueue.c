@@ -13,14 +13,20 @@ pthread_mutex_t m;
 
 void unlockMutex(){
 	pthread_mutex_unlock(&m);
+
 	printf("shared queue mutex %p unlocked\n\n", (void*) &m);
+
+
+
 	//fflush(stdout);
 	//sleep(3);
 }
 
 void lockMutex(){
 	pthread_mutex_lock(&m);
-	printf("shared hash mutex %p locked\n", (void*) &m);
+
+	printf("sharedqueue mutex %p locked\n", (void*) &m);
+
 	//	fflush(stdout);
 	//sleep(3);
 }

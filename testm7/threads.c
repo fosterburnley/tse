@@ -115,8 +115,8 @@ void *tput(void* argp){
 		printf("putting %s in shared queue... \n", personname);
 		//fflush(stdout);
 		lqput(sharedqueue, (void*)person);
-		printf("printing queue...\n");
-		lqapply(sharedqueue, print_person);
+		//		printf("printing queue...\n");
+		//lqapply(sharedqueue, print_person);
 		//printf("deleting people in queue...\n");
 	
 	//lqapply(sharedqueue, delete_person, &m);
@@ -124,7 +124,7 @@ void *tput(void* argp){
 	//printf("printing queue...\n");
 	//lqapply(sharedqueue, print_person, &m);
 		i++;
-	}
+			}
 	return NULL;
 }
 
@@ -132,7 +132,7 @@ void *tput(void* argp){
 void tget(){
  
 	int i = 0;
-	while(i < 350){
+	//	while(i < 350){
 		printf("int i tget: %d\n", i); 
 		//sleep(10);
 		//printf("getting from shared queue...\n");
@@ -154,7 +154,7 @@ void tget(){
 		}
 		delete_person(person);
 		//		lqapply(sharedqueue, print_person);
-	}
+		//	}
 
 	//	return NULL;
 }
@@ -200,9 +200,13 @@ void* tsearch(void* argp){
 
 void* tremove(void* argp){
 	int i = 0;
+
 	char* personname;
 	while (i < 10500){
 		personname = (char*) argp;
+	//while (i < 100){
+
+
 		printf("removing person named  %s from sharedqueue...\n", personname);
 		person_t* removed;
 		removed  = (person_t*) lqremove(sharedqueue, searchfn, (void*)(personname));
@@ -226,7 +230,7 @@ void* tremove(void* argp){
         mikaela++;                                                                                                                                       
         printf("mikaela count: %d\n", mikaela);                                                                                                          
       }      
-			lqapply(sharedqueue, print_person);
+			//lqapply(sharedqueue, print_person);
 			delete_person(removed);
 		}
 		i++;
@@ -258,6 +262,7 @@ int main(){
 	sharedqueue = lqopen();
 
 	// create the threads
+
 	createThread(&t1, tput, "zach");
 	createThread(&t2, tput, "foster");
 	createThread(&t3, tput, "mikaela");
@@ -269,6 +274,37 @@ int main(){
 	createThread(&t9, tput, "mikaela");
 	createThread(&t10, tput, "mikaela");
 	
+
+	//createThread(&t1, tput, "zach");
+	//createThread(&t2, tput, "foster");
+	//createThread(&t3, tput, "mikaela");
+	/*
+	int currentThread = 1;
+	int numberofThreads = 85;
+	pthread_t threads[numberofThreads];
+	
+	while (currentThread <= numberofThreads){                                                                                                                                         
+    createThread(&threads[currentThread], tput, "zach");                                                                                                                 
+    currentThread++;                                                                                                                                                                
+  }                                                                                                                                                                                  
+  //update currentThread                                                                                                                                                             
+  currentThread = 1;                                                                                                                                                                 
+  // join threads                                                                                                                                                                    
+  while(currentThread <= numberofThreads){                                                                                                                                           
+    if(pthread_join(threads[currentThread], NULL)!=0){                                                                                                                              
+                                                                                                                                                                                    
+      exit(EXIT_FAILURE);                                                                                                                                                           
+                                                                                                                                                                                    
+  }                                                                                                                                                                                 
+                                                                                                                                                                                    
+    else{                                                                                                                                                                           
+                                                                                                                                                                                    
+      printf("thread %d terminated\n", currentThread);                                                                                                                              
+                                                                                                                                                                                    
+    }                                                                                                                                                                               
+    currentThread++;                                                                                                                                                                
+  }             
+	*/
 	//	createThread(&t3, tsearch, "zach");
 	//createThread(&t4, tsearch, "mikaela");
 	/*
@@ -277,15 +313,14 @@ int main(){
 		exit(EXIT_FAILURE);
 	}
 	*/
-	
-	//createThread(&t2, tget, NULL);
+		//createThread(&t2, tget, NULL);
 	/*
 	createThread(&t3, tput, NULL);
 	createThread(&t4, tsearch, (void*) personname);
 	createThread(&t5, tremove, (void*) personname);   
 	*/
-
 	
+ 
 	if (pthread_join(t1, NULL)!=0){                                                                                                                                                            
     exit(EXIT_FAILURE);                                                                                                                                                                                    
   }
@@ -307,6 +342,7 @@ int main(){
     printf("t3 terminated\n");                                                                                                                  
                                                                                                                                                 
   }
+
 
 	if(pthread_join(t4, NULL)!=0){                                                                                                                                                  
     exit(EXIT_FAILURE);                                                                                                                                                              
@@ -367,15 +403,44 @@ int main(){
 	
 	
 	
+
+
+
 	lqapply(sharedqueue, print_person);     
 	//tget();
+	/*
+	currentThread = 1;
 	
+	while (currentThread <= numberofThreads){                                                                                                                                      
+    createThread(&threads[currentThread], tremove, "zach");                                                                                                                         
+    currentThread++;                                                                                                                                                                 
+  }
+	currentThread= 1;
 	
+	while(currentThread <= numberofThreads){                                                                                                                                          
+                                                                                                                                                                                     
+    if(pthread_join(threads[currentThread], NULL)!=0){                                                                                                                              
+                                                                                                                                                                                    
+      exit(EXIT_FAILURE);                                                                                                                                                           
+                                                                                                                                                                                    
+  }                                                                                                                                                                                                                                                                                                                                                                    
+    else{                                                                                                                                                                           
+                                                                                                                                                                                   
+      printf("thread %d terminated\n", currentThread);                                                                                                                              
+                                                                                                                                                                                    
+    }                                                                                                                                                                               
+    currentThread++;                                                                                                                                                                
+  } 
+	*/     
 	tremove("zach");
 	tremove("foster");
 	tremove("mikaela");
 	lqclose(sharedqueue);
+
 	printf("number of puts %d\n", numberofPuts);
+
+	
+
 	printf("zach count: %d, foster count: %d, mikaela count: %d\n", zach, foster, mikaela);
 	
 	
