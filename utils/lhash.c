@@ -22,8 +22,14 @@ void unlockhashMutex(){
 }
 
 void lockhashMutex(){
-	printf("shared mutex %p locked\n", (void*)&m); 
-  pthread_mutex_lock(&m);
+	if (pthread_mutex_trylock(&m)==0){                                                                                                                            
+    printf("shared hash mutex %p locked\n", (void*) &m);                                                                                                        
+  }                                                                                                                                                             
+  else{                                                                                                                                                         
+    printf("did not lock\n");                                                                                                                                   
+  }    
+	//printf("shared hash mutex %p locked\n", (void*)&m); 
+  //pthread_mutex_lock(&m);
 }
 
 

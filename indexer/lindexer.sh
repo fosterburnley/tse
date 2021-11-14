@@ -1,4 +1,4 @@
 #!/bin/bash
 
-lindexer pages-depth3 lindexnm10 10
+lindexer pages-depth3 lindexnm82 82
 
